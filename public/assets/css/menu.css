@@ -1,4 +1,4 @@
-/* -------------------------------- 
+/* --------------------------------
 Primary style
 -------------------------------- */
 *, *::after, *::before {
@@ -11,8 +11,8 @@ Primary style
   content: '';
 }
 
-/* -------------------------------- 
-Main components 
+/* --------------------------------
+Main components
 -------------------------------- */
 .cd-nav-trigger {
   position: absolute;
@@ -338,5 +338,5 @@ ul.cd-primary-nav {
 }
 
 .cd-overlay-content span {
-  background-color: #1dbe72;
+  background-color: rgba(29, 128, 82, 0.99);
 }

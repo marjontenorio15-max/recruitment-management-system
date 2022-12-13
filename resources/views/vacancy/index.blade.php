@@ -88,7 +88,7 @@
 <div class="container p-3">
        <div class="card shadow">
            <div class="card-header bg-primary">
-               <h2 class="text-white text-center"> Vacancy | Jobs </h2>
+               <h2 class="text-white text-center"> Jobs | Vacancy </h2>
            </div>
            <div class="card-body">
                <button class="btn btn-outline-success shadow icon-print float-end" type="button" value="Create PDF"

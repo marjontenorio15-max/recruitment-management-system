@@ -31,12 +31,5 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-//    'google' => [
-//        'client_id' => '815097986806-pe0b9q0hj64pjgep433vvu2bb1cs00p0.apps.googleusercontent.com',
-//        'client_secret' => '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',
-//        'redirect' => 'http://127.0.0.1:8000/login',
-//    ],
-
-
 ];
 
