@@ -28,7 +28,7 @@
                                <p class="text-white">New Jobs <i class="icon-list-add"></i></p>
                            </div>
                            <div class="card-footer text-center">
-                               <a href="{{route('vacancy.index')}}" class="text-white">More info <i class="icon-right-circled"></i></a>
+                               <a href="{{route('vacancy.index')}}" class="text-white">More info<i class="icon-right-circled"></i></a>
                            </div>
                        </div>
                    </div>
