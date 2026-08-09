@@ -131,7 +131,7 @@
                                          ->select('apply.remarks', 'apply.id', 'applicants.file_attachment',
                                          'apply.created_at', 'tbl_job_list.title', 'companies.company_name',
                                        'applicants.first_name', 'applicants.last_name', 'applicants.middle_name', 'apply.description')
-                                         ->simplePaginate(5);
+                                       -> orderBy('apply.created_at', 'desc')->simplePaginate(5);
 
                               @endphp
                               @foreach($applicants as $applicant)
@@ -141,10 +141,14 @@
                                       <td>{{ $applicant->company_name }}</td>
                                       <td>{{ $applicant->created_at }}</td>
                                       <td>
-                                          <a href="{{ url('/download/'.$applicant->file_attachment) }}" target="_blank">
-                                              <i class="icon-download">Resume</i>
-                                              {{--                                       {{ $applicant->file_attachment }}--}}
-                                          </a>
+                                          @if($applicant->file_attachment != null)
+                                            <a href="<?php echo asset("storage/uploads/$applicant->file_attachment")?>" target="_blank">
+                                                <i class="icon-download">Resume</i>
+                                                {{--                                       {{ $applicant->file_attachment }}--}}
+                                            </a>
+                                          @else
+                                            N/A
+                                          @endif
                                       </td>
                                       <td> {{ $applicant->remarks }}</td>
                                       <td> {{ $applicant->description }}</td>

@@ -8,7 +8,9 @@ use App\Models\Applicant;
 use App\Models\Vacancy;
 use Illuminate\Http\Request;
 use App\Models\Apply;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+
 
 
 class ApplyController extends Controller
@@ -53,6 +55,36 @@ class ApplyController extends Controller
             ->with('success','Created successfully.');
     }
 
+    public function applyJob(Request $request)
+    {
+        date_default_timezone_set('Asia/Manila');
+       $request->validate([
+           'job_id' => 'required',
+       ]);
+
+       $request->this->applicant_id = auth()->user()->id;
+
+       $validate = Apply::where('job_id', $request->job_id)
+       ->where('applicant_id', $request->applicant_id)
+       ->get();
+
+       if(count($validate) > 0) {
+            return response()->json(['result' => 2]);
+       }
+       else{
+            Apply::insert([
+                'job_id' => $request->job_id,
+                'applicant_id' => auth()->user()->id,
+                'remarks' => $request->remarks,
+                'description' => '',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+            return response()->json(['result' => 1]);
+       }
+
+    }
+
 
     public function show(Apply $apply)
     {
@@ -86,7 +118,7 @@ class ApplyController extends Controller
         return redirect()->route('apply.index')
             ->with('success','Deleted successfully');
     }
-    public function get($id)
+    public function get(Request $id)
     {
         $vacancy = DB::table('tbl_job_list')->find($id);
 //        $get = $id;
@@ -108,28 +140,49 @@ class ApplyController extends Controller
         return view('vacancy.success', compact('vacancy'));
     }
 
-//        $applicants = DB::table('applicants')->where('applicants.applicant_id',auth()->user()->id)->get();
-//        Applicant::create([
-//            //            $data,$data2,
-//            'applicant_id' => auth()->user()->id,
-//            'job_id' => $id,
-//            'first_name' => $applicants->first_name,
-//            'last_name' => $applicants->last_name,
-//            'middle_name' => $applicants->middle_name,
-//            'address' => $applicants->address,
-//            'sex' => $applicants->sex,
-//            'civil_status' => $applicants->civil_status,
-//            'birth_date' => $applicants->birth_date,
-//            'birth_place' => $applicants->birth_place,
-//            'age' => $applicants->age,
-//            //            'user_name' => $this->user_name,
-//            //            'password' => $this->password,
-//            'email_address' => $applicants->email_address,
-//            'contact_no' => $applicants->contact_no,
-//            'degree' => $applicants->degree,
-//            'file_attachment' => $applicants->file_attachment
-//
-//        ]);
+    public function get_applicants(Request $request)
+    {
+        $user = auth()->user();
 
+        // Start base query
+        $query = DB::table('apply')
+            ->join('tbl_job_list', 'apply.job_id', '=', 'tbl_job_list.id')
+            ->join('applicants', 'apply.applicant_id', '=', 'applicants.applicant_id')
+            ->join('companies', 'tbl_job_list.company_id', '=', 'companies.company_id')
+            ->select(
+                'apply.id',
+                'apply.remarks',
+                'apply.created_at',
+                'tbl_job_list.title',
+                'companies.company_name',
+                'applicants.file_attachment',
+                'applicants.first_name',
+                'applicants.last_name',
+                'applicants.middle_name',
+                'applicants.email_address',
+                'applicants.contact_no',
+                'applicants.address',
+                'applicants.city',
+                'applicants.state',
+                'applicants.zipcode',
+                'applicants.degree'
+            );
+
+        // Apply role-based filter
+        if ($user->role_id == 2) {
+            $query->where('tbl_job_list.company_id', $user->id);
+        }
+
+       // Search / Filter by Remarks (Case-insensitive & Partial Match)
+        if ($request->filled('remarks') && strtolower($request->remarks) !== 'all') {
+            $searchTerm = '%' . strtolower(trim($request->remarks)) . '%';
+            $query->whereRaw('LOWER(apply.remarks) LIKE ?', [$searchTerm]);
+        }
+
+        $applicants = $query->latest('apply.created_at')->get();
+        $selectedRemark = $request->get('remarks', 'All');
+
+        return view('generate-reports', compact('applicants', 'selectedRemark'));
+    }
 
 }

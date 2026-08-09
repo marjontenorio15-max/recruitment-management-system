@@ -14,15 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('tbl_job_list', function (Blueprint $table) {
-//            $table->id('job_id');
+
             $table->id();
             $table->string('title');
             $table->integer('company_id');
-//            $table->string('job_details', 2000);
             $table->string('created_by');
             $table->integer('no_of_employee');
             $table->string('salary');
             $table->string('sex');
+            $table->string('degree');
             $table->string('work_exp');
             $table->string('job_desc');
             $table->string('location');

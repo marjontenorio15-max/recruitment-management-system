@@ -1,4 +1,4 @@
-
+switch
 @extends('layouts.app-master')
 @section('content')
     <div class="card p-3 m-3">

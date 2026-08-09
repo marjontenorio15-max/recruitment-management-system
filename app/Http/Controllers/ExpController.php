@@ -16,6 +16,13 @@ class ExpController extends Controller
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
+    public function getWE(Request $request)
+    {
+        $data = \DB::table('experience')->where('experience.applicant_id', auth()->user()->id)->get();
+
+        return response()->json(['data' => $data]);
+    }
+
 
     public function create()
     {
@@ -36,6 +43,73 @@ class ExpController extends Controller
 
         return redirect()->route('job-experience.index')
             ->with('success','Job Experience created successfully.');
+    }
+
+    public function saveWE(Request $request)
+    {
+        $request->validate([
+            'job_title' => 'required',
+            'company_name' => 'required',
+            'period_employed' => 'required',
+            'achievements' => 'required'
+        ]);
+
+        if(!isset($request->we_id)) {
+            $fileName = null;
+
+            if($request->file()) {
+               $fileName = time().'_'.$request->certificate->getClientOriginalName();
+               $filePath = $request->file('certificate')->storeAs('uploads', $fileName, 'public');
+
+               Exp::create(array_merge($request->all(), ['certificate' => $fileName]));
+            }
+            else {
+                Exp::create($request->all());
+            }
+        }
+        else {
+
+            $data = [
+                'job_title' => $request->job_title,
+                'company_name' => $request->company_name,
+                'period_employed' => $request->period_employed,
+                'achievements' => $request->achievements,
+            ];
+
+            $fileName = null;
+
+            if($request->file()) {
+               $fileName = time().'_'.$request->certificate->getClientOriginalName();
+               $filePath = $request->file('certificate')->storeAs('uploads', $fileName, 'public');
+
+               $data['certificate'] = $fileName;
+           }
+
+            Exp::where('id', $request->we_id)
+            ->update($data);
+        }
+
+        return response()->json(['result' => 1]);
+    }
+
+    public function deleteWE(Request $request)
+    {   
+        $request->validate([
+            'we_id' => 'required',
+        ]);
+
+        Exp::where('id', $request->we_id)
+        ->delete();
+
+
+        return response()->json(['result' => 1]);
+    }
+
+    public function getWEById(Request $request)
+    {
+        $data = Exp::where('id', $request->id)->first();
+
+        return response()->json(['data' => $data]);
     }
 
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Vacancy;
 use App\Models\Company;
+use App\Models\Apply;
 use http\Client\Curl\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,8 +22,8 @@ class VacancyController extends Controller
             'tbl_job_list.location', 'no_of_employee', 'salary', 'sex', 'work_exp', 'job_desc',
             'users.username as created_by', 'tbl_job_list.created_at as created_at',
             'users.username as company_name', 'status')->
-        leftJoin('users', 'users.id', '=', 'tbl_job_list.created_by')->
-        orderBy('tbl_job_list.created_by')->simplePaginate(5);
+            leftJoin('users', 'users.id', '=', 'tbl_job_list.created_by')->
+            orderBy('tbl_job_list.created_at', 'desc')->simplePaginate(5);
 
 //        $vacancies = DB::table('tbl_job_list')->select('tbl_job_list');
 
@@ -43,7 +44,7 @@ class VacancyController extends Controller
 
     public function store(Request $request)
     {
-
+        date_default_timezone_set('Asia/Manila');
         $request->validate([
             'title' => 'required',
 //            'job_details' => 'required',
@@ -147,5 +148,41 @@ class VacancyController extends Controller
 
         session()->flash('msg','Product status has been updated successfully.');
         return redirect('/vacancy');
+    }
+
+    public function getVacancies(Request $request)
+    {
+        $vacancies = DB::table('tbl_job_list')->select('tbl_job_list.id as id','title', 'company_id',
+                    'location', 'degree', 'no_of_employee', 'salary', 'sex', 'work_exp', 'job_desc',
+                     'users.username as created_by', 'tbl_job_list.created_at as created_at', 'tbl_job_list.status')
+                     ->leftJoin('users', 'users.id', '=', 'tbl_job_list.created_by')
+                     ->orderBy('tbl_job_list.created_at', 'desc');
+        if(isset($request->title)) {
+            $vacancies = $vacancies->where('tbl_job_list.title', 'like', '%' . $request->title . '%');
+        }
+
+        if(isset($request->created_by)) {
+            $vacancies = $vacancies->where('users.username', 'like', '%' . $request->created_by . '%');
+        }
+
+        if(isset($request->location)) {
+            $vacancies = $vacancies->where('tbl_job_list.location', 'like', '%' . $request->location . '%');
+        }
+
+        $vacancies = $vacancies->get();
+
+        return response()->json(['vacancies' => $vacancies]);
+
+    }
+
+    public function getBestApplicant(Request $request)
+    {
+        $apply = Apply::select('*')
+        ->join('applicants', 'applicants.applicant_id', '=', 'apply.applicant_id')
+        ->orderBy('apply.created_at', 'asc')
+        ->where('apply.job_id', $request->jobId)
+        ->get();
+
+        return response()->json(['data' => $apply]);
     }
 }

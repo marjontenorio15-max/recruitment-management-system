@@ -20,10 +20,11 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('middle_name');
 
-            $table->string('street_address');
+            $table->string('address');
             $table->string('city');
             $table->string('state');
             $table->string('zipcode');
+
 
             $table->string('sex');
             $table->string('civil_status');
@@ -36,6 +37,7 @@ return new class extends Migration
             $table->bigInteger('contact_no');
             $table->string('degree');
             $table->string('file_attachment');
+            $table->string('remarks');
             $table->timestamps();
         });
     }

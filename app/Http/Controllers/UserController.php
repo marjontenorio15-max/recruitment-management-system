@@ -6,7 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Mail\UserEmail;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {

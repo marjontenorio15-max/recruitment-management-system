@@ -76,90 +76,97 @@ class Applicants extends Component
 //                ->with('success','File has been uploaded.')
 //                ->with('file', $fileName);
 //        }
-        $this->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'middle_name' => 'required',
-//            'address' => 'required',
 
-            'street_address' => 'required',
-            'city' => 'required',
-            'state' => 'required',
-            'zipcode' => 'required',
+        try {
+            $this->validate([
+                'first_name' => 'required',
+                'last_name' => 'required',
+                // 'middle_name' => 'required',
+    //            'address' => 'required',
 
-            'sex' => 'required',
-            'civil_status' => 'required',
-            'birth_date' => 'required|date',
-            'birth_place' => 'required',
-//            'age' => 'required',
-//            'user_name' => 'required',
-//            'password' => 'required',
-//            'email_address' => 'required',
-            'contact_no' => 'required',
-            'degree' => 'required',
-            'file_attachment' => 'required',
-        ]);
+                'street_address' => 'required',
+                'city' => 'required',
+                'state' => 'required',
+                'zipcode' => 'required',
 
-//        $this->file_attachment->store('pdf');
-
-//        $vacancies = DB::table('tbl_job_list');
-
-
-
-        if (!empty(auth()->user()->id)) {
-
-            $years = Carbon::parse($this->birth_date);
-
-            $idad = $years->age;
-
-            Applicant::create([
-    //            $data,$data2,
-
-                'applicant_id' => auth()->user()->id,
-//                'job_id' => $this->job_id,
-                'first_name' => $this->first_name,
-                'last_name' => $this->last_name,
-                'middle_name' => $this->middle_name,
-
-                'street_address' => $this->street_address ,
-                'city' => $this->city,
-                'state' => $this->state,
-                'zipcode' => $this->zipcode,
-
-                'sex' => $this->sex,
-                'civil_status' => $this->civil_status,
-                'birth_date' => $this->birth_date,
-                'birth_place' => $this->birth_place,
-                'age' => $idad,
-    //            'user_name' => $this->user_name,
-    //            'password' => $this->password,
-                'email_address' => auth()->user()->email,
-                'contact_no' => $this->contact_no,
-                'degree' => $this->degree,
-                'file_attachment' => $this->file_attachment->store(''),
-                'remarks' => 'Pending',
-
+                'sex' => 'required',
+                'civil_status' => 'required',
+                'birth_date' => 'required|date',
+                'birth_place' => 'required',
+    //            'age' => 'required',
+    //            'user_name' => 'required',
+    //            'password' => 'required',
+    //            'email_address' => 'required',
+                'contact_no' => 'required',
+                'degree' => 'required',
+                // 'file_attachment' => 'required',
             ]);
+
+    //        $this->file_attachment->store('pdf');
+
+    //        $vacancies = DB::table('tbl_job_list');
+
+
+
+            if (!empty(auth()->user()->id)) {
+
+                $years = Carbon::parse($this->birth_date);
+
+                $idad = $years->age;
+
+                Applicant::create([
+        //            $data,$data2,
+
+                    'applicant_id' => auth()->user()->id,
+    //                'job_id' => $this->job_id,
+                    'first_name' => $this->first_name,
+                    'last_name' => $this->last_name,
+                    'middle_name' => $this->middle_name,
+
+                    'street_address' => $this->street_address ,
+                    'city' => $this->city,
+                    'state' => $this->state,
+                    'zipcode' => $this->zipcode,
+
+                    'sex' => $this->sex,
+                    'civil_status' => $this->civil_status,
+                    'birth_date' => $this->birth_date,
+                    'birth_place' => $this->birth_place,
+                    'age' => $idad,
+        //            'user_name' => $this->user_name,
+        //            'password' => $this->password,
+                    'email_address' => auth()->user()->email,
+                    'contact_no' => $this->contact_no,
+                    'degree' => $this->degree,
+                    'file_attachment' => $this->file_attachment->store(''),
+                    'remarks' => 'Pending',
+
+                ]);
+            }
+    //        if($req->file()) {
+    //            $fileName = time().'_'.$req->file->getClientOriginalName();
+    //            $filePath = $req->file('file')->storeAs('uploads', $fileName, 'public');
+    //            $fileModel->name = time().'_'.$req->file->getClientOriginalName();
+    //            $fileModel->file_path = '/storage/' . $filePath;
+    //            $fileModel->save();
+    //            return back()
+    //                ->with('success','File has been uploaded.')
+    //                ->with('file', $fileName);
+    //        }
+
+
+
+
+    //        Applicant::create($validatedDate);
+
+            session()->flash('message', 'Applicant Created Successfully.');
+
+            $this->resetInputFields();
+            
+        } catch (Exception $e) {
+            return response()->json(['e' =>  $e]);
         }
-//        if($req->file()) {
-//            $fileName = time().'_'.$req->file->getClientOriginalName();
-//            $filePath = $req->file('file')->storeAs('uploads', $fileName, 'public');
-//            $fileModel->name = time().'_'.$req->file->getClientOriginalName();
-//            $fileModel->file_path = '/storage/' . $filePath;
-//            $fileModel->save();
-//            return back()
-//                ->with('success','File has been uploaded.')
-//                ->with('file', $fileName);
-//        }
-
-
-
-
-//        Applicant::create($validatedDate);
-
-        session()->flash('message', 'Applicant Created Successfully.');
-
-        $this->resetInputFields();
+        
 
     }
 
@@ -210,7 +217,7 @@ class Applicants extends Component
 
         $validatedDate = $this->validate([
             'first_name' => 'required', 'last_name' => 'required',
-            'middle_name' => 'required',
+            // 'middle_name' => 'required',
 
             'street_address' => 'required',
             'city' => 'required',
@@ -224,7 +231,7 @@ class Applicants extends Component
             'age' => 'required|numeric|min:18',
 //            'user_name' => 'required', 'password' => 'required',
             'email_address' => 'required', 'contact_no' => 'required', 'degree' => 'required',
-            'file_attachment' => 'required'
+            // 'file_attachment' => 'required'
         ]);
 
         $applicant = Applicant::find($this->applicant_id);

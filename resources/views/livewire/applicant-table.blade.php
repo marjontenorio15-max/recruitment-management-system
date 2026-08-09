@@ -59,8 +59,10 @@
     </div>
     <div class=" float-end m-3">
 
-        <i title="Edit" class="icon-edit-1 btn btn-outline-primary "
-           wire:click="edit({{ $applicant->id }})">Edit Personal Information</i>
+        <!-- <i title="Edit" class="icon-edit-1 btn btn-outline-primary "
+           wire:click="edit({{ $applicant->id }})">Edit Personal Information</i> -->
+        <a href="{{ route('edit_applicant_account') }}" title="Edit" class="icon-edit-1 btn btn-outline-primary "
+           wire:click="edit({{ $applicant->id }})">Edit Personal Information</a>
 {{--        <i title="Delete" class="icon-trash-7 btn btn-outline-danger"--}}
 {{--           wire:click="delete({{ $applicant->id }})"></i>--}}
 

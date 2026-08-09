@@ -109,40 +109,39 @@
                             {{--                                @foreach($applicants as $applicant)--}}
                             {{--                                @endforeach--}}
                         </div>
-                        <div class="card-footer bg-white">
-                            @if(auth()->user()->role_id == 3)
 
-                                <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-outline-primary shadow" data-bs-toggle="modal" data-bs-target="#Personal_info">
-                                    Personal Information
-                                </button>
-
-                                <!-- Modal for personal information -->
-                                <div class="modal fade" id="Personal_info" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-scrollable modal-xl">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-primary">
-                                                <h5 class="modal-title text-white text-center" id="staticBackdropLabel">Personal Information</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                @livewire('applicants')
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <a  href="{{ route('educational_background.index') }}" class="btn btn-outline-primary shadow">
-                                    Educational Background
-                                </a>
-                                <a  href="{{ route('job-experience.index') }}" class="btn btn-outline-primary shadow">
-                                    Work Experience
-                                </a>
-                                <!-- Modal for Educational Background -->
-
-
-                            @endif
+                        @if(auth()->user()->role_id == 3)
+                        <div class="card-header bg-info text-white">
+                            <div class="m-3 text-center">
+                                <h3 class="text-white">Personal Information</h3>
+                            </div>
                         </div>
+
+                        <div class="card-footer bg-white">
+                            @include('livewire.applicant-create')
+                        </div>
+
+                        <div class="card-header bg-info text-white">
+                            <div class="m-3 text-center">
+                                <h3 class="text-white">Educational Background</h3>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white">
+                            @include('fragments.educational_background')
+                        </div>
+
+                        <div class="card-header bg-info text-white">
+                            <div class="m-3 text-center">
+                                <h3 class="text-white">Work Experience</h3>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white">
+                            @include('fragments.work_experience')
+                        </div>
+
+                        @endif
                     </div>
                 </div>
 

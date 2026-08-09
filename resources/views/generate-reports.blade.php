@@ -1,17 +1,36 @@
 @extends('layouts.app-master')
-@section('content')
 
-    <div class="container-fluid">
-        <div class="card m-3 shadow">
-            <div class="card-header bg-primary">
-                <button class="btn btn-success shadow icon-print float-end" type="button" value="Create PDF"
-                        id="btPrint" onclick="createPDF()"> Generate Report</button>
+@section('content')
+<div class="container-fluid">
+    <div class="card m-3 shadow">
+        <div class="card-header bg-primary">
+            <div class="row align-items-center">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-5">
+                    <!-- Filter Form -->
+                    <form method="GET" action="{{ route('generate-reports') }}" id="filterForm" class="d-flex align-items-center justify-content-end">
+                        <span class="text-white me-2">Remarks:</span>
+                        <select name="remarks" class="form-select w-auto" onchange="document.getElementById('filterForm').submit()">
+                            <option value="All" {{ $selectedRemark == 'All' ? 'selected' : '' }}>All</option>
+                            <option value="Pending" {{ $selectedRemark == 'Pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="For Interview" {{ $selectedRemark == 'For Interview' ? 'selected' : '' }}>For Interview</option>
+                            <option value="Reject" {{ $selectedRemark == 'Reject' ? 'selected' : '' }}>Reject</option>
+                            <option value="Hired" {{ $selectedRemark == 'Hired' ? 'selected' : '' }}>Hired</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="col-sm-3">
+                    <button class="btn btn-success shadow float-end" type="button" onclick="window.print()">
+                        Generate Report
+                    </button>
+                </div>
             </div>
-            <div class="card-body">
-                <div id="tab">
-                    <h3>List of Applicant</h3>
-                    <table class="table table-bordered shadow">
-                        <thead>
+        </div>
+        <div class="card-body">
+            <div id="tab">
+                <h3>List of Applicants</h3>
+                <table class="table table-bordered shadow tblApplicants">
+                    <thead>
                         <tr>
                             <th>Applicant Name</th>
                             <th>Job Title</th>
@@ -21,102 +40,31 @@
                             <th>Company</th>
                             <th>Degree</th>
                             <th>Date Applied</th>
-                            <th>Status|Remarks</th>
+                            <th>Status | Remarks</th>
                         </tr>
-                        </thead>
-                        <tbody>
-                      @if(auth()->user()->role_id == 2)
-                          @php
-                              ////            $applicants = DB::table('applicants')->where('applicants.email_address', 'users.email')->get();
-                              //       $applicants = DB::table('applicants', 'user_name')->where('user_name', auth()->user()->username)->get();
-                             $applicants = DB::table('apply')
-                                     ->where('tbl_job_list.company_id', auth()->user()->id)
-                                     ->join('tbl_job_list', 'apply.job_id', 'tbl_job_list.id')
-                                     ->join('applicants', 'apply.applicant_id', 'applicants.applicant_id')
-                                     ->join('companies', 'tbl_job_list.company_id', 'companies.company_id')
-                                     ->select('apply.remarks', 'apply.id', 'applicants.file_attachment',
-                                     'apply.created_at', 'tbl_job_list.title', 'companies.company_name',
-                                      'applicants.first_name', 'applicants.last_name', 'applicants.middle_name',
-                                      'applicants.email_address', 'applicants.contact_no',
-                                      'street_address', 'city', 'state', 'zipcode', 'applicants.degree')
-                                     ->simplePaginate(10);
-
-                          @endphp
-                      @elseif(auth()->user()->role_id == 1)
-                          @php
-                              ////            $applicants = DB::table('applicants')->where('applicants.email_address', 'users.email')->get();
-                              //       $applicants = DB::table('applicants', 'user_name')->where('user_name', auth()->user()->username)->get();
-                             $applicants = DB::table('apply')
-//                                     ->where('tbl_job_list.company_id', auth()->user()->id)
-                                     ->join('tbl_job_list', 'apply.job_id', 'tbl_job_list.id')
-                                     ->join('applicants', 'apply.applicant_id', 'applicants.applicant_id')
-                                     ->join('companies', 'tbl_job_list.company_id', 'companies.company_id')
-                                     ->select('apply.remarks', 'apply.id', 'applicants.file_attachment',
-                                     'apply.created_at', 'tbl_job_list.title', 'companies.company_name',
-                                      'applicants.first_name', 'applicants.last_name', 'applicants.middle_name',
-                                      'applicants.email_address', 'applicants.contact_no',
-                                      'street_address', 'city', 'state', 'zipcode', 'applicants.degree')
-                                     ->simplePaginate(10);
-
-                          @endphp
-                      @endif
-                        @foreach($applicants as $applicant)
+                    </thead>
+                    <tbody>
+                        @forelse($applicants as $app)
                             <tr>
-                                <td>{{ $applicant->first_name}} {{ $applicant->middle_name}} {{ $applicant->last_name}}</td>
-                                <td>{{ $applicant->title }}</td>
-                                <td>{{$applicant->email_address}}</td>
-                                <td>{{$applicant->contact_no}}</td>
-
-                                <td>{{$applicant->street_address}}, {{$applicant->city}}, {{$applicant->state}}, {{$applicant->zipcode}} </td>
-
-                                <td>{{ $applicant->company_name }}</td>
-                                <td>{{$applicant->degree}}</td>
-                                <td>{{ $applicant->created_at }}</td>
-                                <td> {{ $applicant->remarks }}</td>
+                                <td>{{ trim("{$app->first_name} {$app->middle_name} {$app->last_name}") ?: 'N/A' }}</td>
+                                <td>{{ $app->title }}</td>
+                                <td>{{ $app->email_address }}</td>
+                                <td>{{ $app->contact_no }}</td>
+                                <td>{{ implode(', ', array_filter([$app->address, $app->city, $app->state, $app->zipcode])) }}</td>
+                                <td>{{ $app->company_name }}</td>
+                                <td>{{ $app->degree }}</td>
+                                <td>{{ \Carbon\Carbon::parse($app->created_at)->format('M d, Y') }}</td>
+                                <td>{{ $app->remarks }}</td>
                             </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                   <div class="float-end">
-                       {!! $applicants->links() !!}
-                   </div>
-                </div>
-
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center">No applicants found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
+</div>
 @endsection
-<script>
-    function createPDF() {
-        var sTable = document.getElementById('tab').innerHTML;
-
-        var style = "<style>";
-        style = style + "table {width: 100%;font: 17px Calibri;}";
-        style = style + "table, th, td {border: solid 1px #DDD; border-collapse: collapse;";
-        style = style + "padding: 2px 3px;text-align: center;}";
-        style = style + "</style>";
-
-        // CREATE A WINDOW OBJECT.
-        var win = window.open('', '', 'height=700,width=700');
-
-        win.document.write('<html><head>');
-        win.document.write('<title>Profile</title>');   // <title> FOR PDF HEADER.
-        win.document.write(style);          // ADD STYLE INSIDE THE HEAD TAG.
-        win.document.write('</head>');
-        win.document.write('<body>');
-        win.document.write(sTable);         // THE TABLE CONTENTS INSIDE THE BODY TAG.
-        win.document.write('</body></html>');
-
-        win.document.close(); 	// CLOSE THE CURRENT WINDOW.
-
-        win.print();    // PRINT THE CONTENTS.
-    }
-</script>

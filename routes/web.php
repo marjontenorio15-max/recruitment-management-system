@@ -16,6 +16,10 @@ use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VacancyController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\RegisterController;
+use Illuminate\Support\Facades\Mail;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,7 +50,7 @@ Route::get('/send-mail',function(){
 //        Mail::to($user->email)->send(new UserEmail($user));
 //    }
 
-    \Mail::to('admin@gmail.com')->send(new SendTestMail($data));
+    Mail::to('admin@gmail.com')->send(new SendTestMail($data));
 
     return "Mail Sent Successfully!!";
 });
@@ -72,6 +76,7 @@ Route::group(['middleware' => 'prevent-back-history'],function(){
 
         Route::view('/job-details', 'pages.job-details')->name('job-details');
         Route::resource('/vacancy', VacancyController::class)->names('vacancy');
+        Route::get('/getBestApplicant', [VacancyController::class,'getBestApplicant']);
         Route::view('/applicant-create', 'livewire.applicant-create')->name('applicant-create');
 
         Route::get('forget-password', [ForgotPasswordController::class, 'showForgetPasswordForm'])->name('forget.password.get');
@@ -90,6 +95,8 @@ Route::group(['middleware' => 'prevent-back-history'],function(){
              */
             Route::get('/register', 'RegisterController@show')->name('register.show');
             Route::post('/register', 'RegisterController@register')->name('register.perform');
+            Route::post('/sendOTP', 'RegisterController@sendOTP')->name('sendOTP');
+            Route::post('/registerUser', 'RegisterController@registerUser')->name('registerUser');
 
             /**
              * Login Routes
@@ -101,6 +108,9 @@ Route::group(['middleware' => 'prevent-back-history'],function(){
             Route::get('/login/google', 'GoogleLoginController@redirect')->name('login.google-redirect');
             Route::get('/login/google/callback', 'GoogleLoginController@callback')->name('login.google-callback');
         });
+
+        Route::get('/getVacancies', [VacancyController::class,'getVacancies']);
+        Route::post('/applicant.store', [Applicants::class,'store'])->name('applicant.store');
 
         Route::group(['middleware' => ['auth']], function () {
 
@@ -132,11 +142,15 @@ Route::group(['middleware' => 'prevent-back-history'],function(){
 
             Route::view('/generate-reports', 'generate-reports')->name('generate-reports');
 
+            Route::get('/generate-reports', [ApplyController::class, 'get_applicants'])->name('generate-reports');
+
             Route::view('/employer-profile', 'employer.employer-profile')->name('employer-profile');
 
             Route::resource('/apply', ApplyController::class)->names('apply');
 
+
             Route::view('/profile', 'profile')->name('profile');
+            Route::post('/edit_profile', [RegisterController::class,'edit_profile']);
 
             Route::view('/applicant-table', 'livewire.applicant-table')->name('applicant-table');
 
@@ -146,17 +160,26 @@ Route::group(['middleware' => 'prevent-back-history'],function(){
 
 
             Route::get('/application-form/{id}', [ApplyController::class, 'get']);
+            Route::get('/applyJob', [ApplyController::class, 'applyJob']);
 
             Route::resource('employer_remarks', Employer_RemarksController::class);
 
             //education background | degree
             Route::resource('educational_background', EducationalBackgroundController::class);
+            Route::get('/getEB', [EducationalBackgroundController::class,'getEB']);
+            Route::post('/saveEB', [EducationalBackgroundController::class,'store']);
+            Route::get('/getEBById', [EducationalBackgroundController::class,'getEBById']);
+            Route::post('/deleteEB', [EducationalBackgroundController::class,'deleteEB']);
 
             //charts
             Route::resource('dashboard', ChartJSController::class);
 
             //Experience
             Route::resource('job-experience', ExpController::class);
+            Route::get('/getWE', [ExpController::class,'getWE']);
+            Route::post('/saveWE', [ExpController::class,'saveWE']);
+            Route::get('/getWEById', [ExpController::class,'getWEById']);
+            Route::post('/deleteWE', [ExpController::class,'deleteWE']);
 
             Route::get('/status-update/{id}', [VacancyController::class , 'updateStatus'])->name('status-update');
 

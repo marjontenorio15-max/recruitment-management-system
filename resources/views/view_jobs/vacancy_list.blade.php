@@ -74,11 +74,7 @@
 {{--                                    Create Work Experience--}}
 {{--                                </a>--}}
                             @else
-                                <a class="btn btn-success icon-doc-text shadow form-group"
-                                   {{--                                       href="{{ route('application-form',['jobs_id' => $vacancy->id])}}"--}}
-                                   {{--                                        href="{{ url('/application-form', $vacancy->id)}}"--}}
-                                   href="{{ url('/application-form', $vacancy->id)}}"
-                                   {{--                                       wire:click="store({{$vacancy->id}})"--}}
+                                <a class="btn btn-success icon-doc-text shadow form-group aApplyJob" href="javascript:;" job-id="{{ $vacancy->id }}"
                                    style="font-size: medium"> Apply</a>
                             @endif
 
@@ -102,4 +98,42 @@
         @endif
     @endforeach
 </table>
+
+<script src="{{asset('assets/js/jquery.min.js')}}"></script>
+<script src="{{asset('assets/js/moment.min.js')}}"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(document).on('click', '.aApplyJob', function(){
+            var jobId = $(this).attr('job-id');
+            ApplyJob(jobId);
+        });
+
+        function ApplyJob(job_id) {
+            $.ajax({
+                url: "applyJob",
+                data: {
+                    job_id: job_id,
+                    remarks: 'Pending',
+                },
+                beforeSend: function() {
+                    
+                },
+                success: function(data){
+                    if(data.result == 1) {
+                        alert('Successfully Applied!');
+                    }
+                    else if(data.result == 2) {
+                        alert('You have already applied on this job!');
+                    }
+                    else{
+                        alert('Application Failed!');
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+
 

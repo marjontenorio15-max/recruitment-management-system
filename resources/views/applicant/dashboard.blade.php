@@ -19,12 +19,27 @@
                           <div class="card-body">
                               <div class="container">
                                   <div class="row">
-                                      <div class="col-8"></div>
+                                      <div class="col-4"></div>
+                                      <div class="col-4">
+
+                                          <form action="" method="get">
+                                              <label for="myInput">Status</label>
+                                              <select id="myInput" onchange="myFunction()" class='form-control'>
+                                                  <option value="" selected="selected">All</option>
+                                                  <option>Pending</option>
+                                                  <option>Hired</option>
+                                                  <option>For Interview</option>
+                                                  <option>Reject</option>
+                                              </select>
+                                          </form>
+
+                                      </div>
                                       <div class="col-4">
                                           <div class="form-group shadow">
                                               <i class="icon-search-2"></i>
                                               <input class="form-control" onkeyup="myFunction()" id="myInput" placeholder="Search"
                                                      type="text">
+
                                           </div>
                                       </div>
                                   </div>
@@ -126,4 +141,5 @@
         }
 
     </script>
+
 @endsection

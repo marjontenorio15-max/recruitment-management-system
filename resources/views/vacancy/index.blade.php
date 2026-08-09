@@ -108,9 +108,9 @@
                          <th>Title</th>
                          <th>Company Name</th>
                          <th>Job Location</th>
-                         <th>Created By</th>
+                        <!--  <th>Created By</th> -->
                          <th>Date Posted</th>
-                         <th>Switch</th>
+                         <th>Status</th>
                          <th>Action</th>
                      </tr>
                      @foreach ($vacancies as $key => $vacancy)
@@ -128,7 +128,7 @@
                                  {{--                               <p>location:                     {{$vacancy->location}}</p>--}}
                                  {{$vacancy->location}}
                              </td>
-                             <td>{{ $vacancy->created_by }}</td>
+                           <!--   <td>{{ $vacancy->created_by }}</td> -->
                              <td>{{date_format($vacancy->created_at, 'F d, Y')}}</td>
                              <td>
 
@@ -144,13 +144,39 @@
                                     <div class="btn-group">
                                         <a class="btn btn-outline-info shadow form-group icon-eye-7" href="{{ route('vacancy.show',$vacancy->id) }}"></a>
                                         <a class="btn btn-outline-primary shadow form-group icon-edit" href="{{ route('vacancy.edit',$vacancy->id) }}"></a>
-                                        <a href="#myModal" data-toggle="modal"
+                                        <a href="#myModal{{ $vacancy->id }}" data-toggle="modal"
                                            class="btn btn-outline-danger icon-trash-7 form-group shadow"></a>
+                                        <a href="javascript:;"
+                                           class="btn btn-outline-success icon-users form-group shadow aBestApplicant" job-id="{{ $vacancy->id }}" title="View Best Applicant"></a>
                                     </div>
 
 
                              </td>
                          </tr>
+                            <div id="myModal{{ $vacancy->id }}" class="modal fade">
+                                <div class="modal-dialog modal-confirm">
+                                    <div class="modal-content">
+                                        <div class="modal-header flex-column">
+                                            <div class="icons-box">
+                                                <i class=" icon-cancel-1"></i>
+                                            </div>
+                                            <h4 class="modal-title w-100">Are you sure?</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Do you really want to delete these records? This process cannot be undone.</p>
+                                        </div>
+                                        <div class="modal-footer justify-content-center">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <form action="{{ route('vacancy.destroy',$vacancy->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                      @endforeach
                  </table>
              </div>
@@ -158,31 +184,39 @@
            </div>
        </div>
    </div>
-<div id="myModal" class="modal fade">
-    <div class="modal-dialog modal-confirm">
+
+<div class="modal fade" id="mdlBestApplicant" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <form class="frmSaveWE" method="post">
+    @csrf
+    <div class="modal-dialog modal-dialog-scrollable modal-md">
         <div class="modal-content">
-            <div class="modal-header flex-column">
-                <div class="icons-box">
-                    <i class=" icon-cancel-1"></i>
-                </div>
-                <h4 class="modal-title w-100">Are you sure?</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white text-center" id="staticBackdropLabel">Best Applicant(s)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Do you really want to delete these records? This process cannot be undone.</p>
+                <table class="table table-bordered shadow tblBestApplicants">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Applicant Name</th>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td colspan="2">No applicant found.</td>
+                    </tr>
+                </table>
             </div>
             <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <form action="{{ route('vacancy.destroy',$vacancy->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+<script src="{{asset('assets/js/jquery.min.js')}}"></script>
+<script src="{{asset('assets/js/moment.min.js')}}"></script>
 <script>
     function createPDF() {
         var sTable = document.getElementById('tab').innerHTML;
@@ -207,6 +241,45 @@
         win.document.close(); 	// CLOSE THE CURRENT WINDOW.
 
         win.print();    // PRINT THE CONTENTS.
+    }
+
+    $(document).ready(function() {
+        $(document).on('click', '.aBestApplicant', function(){
+            var jobId = $(this).attr('job-id');
+            console.log(jobId);
+            // $('#mdlBestApplicant').modal('show');
+            GetBestApplicant(jobId);
+        });
+    });
+
+    function GetBestApplicant(jobId) {
+        $.ajax({
+            url: "getBestApplicant",
+            data: {
+                jobId: jobId,
+            },
+            beforeSend: function() {
+                var html ='<tr><td colspan="2">Loading...</td></tr>';
+                $('.tblBestApplicants tbody').html(html);
+            },
+            success: function(result){
+                var html = '';
+                if(result.data.length > 0) {
+                    for (var index = 0; index < result.data.length; index++) {
+                        html += '<tr>';
+                        html += '<td>' + (index + 1) + '</td>';
+                        html += '<td>' + result.data[index].first_name + ' ' + result.data[index].middle_name + ' ' + result.data[index].last_name + '</td>';
+                        html += '</tr>';
+                    }
+                }
+                else{
+                    html ='<tr><td colspan="2">No applicant found.</td></tr>';
+                }
+
+                $('.tblBestApplicants tbody').html(html);
+                $('#mdlBestApplicant').modal('show');
+            }
+        });
     }
 </script>
 

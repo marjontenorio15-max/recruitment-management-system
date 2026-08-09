@@ -30,11 +30,12 @@
 
                     <div class="col-9">
                         @php
-                            $applicants = \App\Models\Applicant::where('user_name', auth()->user()->username)->get();
+                            $applicants = \App\Models\Applicant::where('applicant_id', auth()->user()->id)->get();
                         @endphp
                         @foreach($applicants as $applicant)
 
-                        <form enctype="multipart/form-data">
+                        <form action="{{ route('applicant.store') }}" enctype="multipart/form-data" method="post">
+                            @csrf
                             <input type="hidden" wire:model="applicant_id">
 {{--                            <h4>Login Account</h4>--}}
 {{--                            <div class="row">--}}
@@ -67,6 +68,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="col-form-label" for="first_name">First Name:</label>
+                                        <input class="form-control input-sm" id="id" value="{{$applicant->id}}"
+                                               placeholder="ID" type="text" wire:model="id" style="display: none;">
                                         <input class="form-control input-sm" id="first_name" value="{{$applicant->first_name}}"
                                                placeholder="First Name" type="text" wire:model="first_name">
                                         @error('first_name') <span class="text-danger">{{ $message }}</span>@enderror
