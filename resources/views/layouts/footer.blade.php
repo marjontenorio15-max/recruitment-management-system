@@ -1,19 +1,23 @@
-<!-- Custom CSS for Corporate RMS Footer -->
+<!-- Custom CSS for Corporate RMS Footer Component -->
 <style>
     .rms-footer {
         background-color: #ffffff;
-        border-top: 1px solid var(--ae-border, #e2e8f0);
+        border-top: 1px solid var(--ae-border, #dbe2ea);
         font-size: 0.875rem;
     }
+
     .ae-footer-link {
         color: var(--ae-text-muted, #64748b) !important;
         font-weight: 500;
-        transition: color 0.15s ease-in-out;
+        transition: color 0.15s ease-in-out, text-decoration-color 0.15s ease-in-out;
     }
-    .ae-footer-link:hover {
+
+    .ae-footer-link:hover,
+    .ae-footer-link:focus-visible {
         color: var(--ae-navy, #002855) !important;
         text-decoration: underline !important;
     }
+
     .ae-brand-badge {
         background-color: var(--ae-navy, #002855) !important;
         border-left: 3px solid var(--ae-red, #e31837);
@@ -32,12 +36,12 @@
 
             <!-- Corporate Brand & Copyright -->
             <div class="d-flex align-items-center gap-2 flex-wrap justify-content-center justify-content-md-start">
-                <div class="d-flex align-items-center gap-1.5">
+                <div class="d-flex align-items-center gap-1">
                     <span class="ae-brand-badge">AE</span>
-                    <span class="fw-bold text-dark fs-6 tracking-tight ms-1" style="color: var(--ae-navy, #002855) !important;">RMS</span>
+                    <span class="fw-bold fs-6 tracking-tight ms-1" style="color: var(--ae-navy, #002855) !important;">RMS</span>
                 </div>
                 <span class="text-muted d-none d-sm-inline">|</span>
-                <span class="text-muted small">&copy; {{ date('Y') }} AEI General Services, Inc. All rights reserved.</span>
+                <span class="text-muted small">&copy; {{ date('Y') }} RMS. All rights reserved.</span>
             </div>
 
             <!-- Footer Navigation Links -->

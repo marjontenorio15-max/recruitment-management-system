@@ -54,10 +54,10 @@
     .user-avatar-badge {
         background-color: var(--ae-navy, #002855);
         color: #ffffff;
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 700;
         display: inline-flex;
         align-items: center;
@@ -71,10 +71,17 @@
 
         <!-- Brand / Logo -->
         <a class="navbar-brand d-flex align-items-center gap-2 py-1" href="{{ route('front-page') }}">
-            <img src="{{ asset('assets/img/rms1.png') }}" alt="RMS Logo" width="36" height="36" class="d-inline-block align-text-top">
-            <div class="d-flex flex-column leading-none">
-                <span class="fw-extrabold text-dark fs-5 tracking-tight lh-1" style="color: var(--ae-navy, #002855) !important;">RMS</span>
-                <span class="text-muted fw-bold extra-small tracking-wider text-uppercase" style="font-size: 0.65rem; color: var(--ae-red, #e31837) !important;">Recruitment Portal</span>
+            <!-- Custom AE RMS Vector SVG Logo -->
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="d-inline-block align-text-top">
+                <rect width="36" height="36" rx="8" fill="var(--ae-navy, #002855)"/>
+                <path d="M0 8C0 3.58172 3.58172 0 8 0H12L0 12V8Z" fill="var(--ae-red, #e31837)"/>
+                <path d="M11 11L18 18L11 25" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M18 11L25 18L18 25" stroke="var(--ae-red, #e31837)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+
+            <div class="d-flex flex-column lh-1">
+                <span class="fw-bold text-dark fs-5 tracking-tight" style="color: var(--ae-navy, #002855) !important;">RMS</span>
+                <span class="fw-bold text-uppercase" style="font-size: 0.65rem; color: var(--ae-red, #e31837) !important; letter-spacing: 0.05em;">Recruitment Portal</span>
             </div>
         </a>
 
@@ -207,17 +214,17 @@
             <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
                 @auth
                     <div class="dropdown">
-                        <button class="btn btn-light border rounded-pill px-3 py-1.5 d-flex align-items-center gap-2 dropdown-toggle shadow-2xs" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-light border rounded-pill px-3 py-1 d-flex align-items-center gap-2 dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="user-avatar-badge">
                                 {{ strtoupper(substr(auth()->user()->username ?? 'U', 0, 1)) }}
                             </span>
                             <span class="fw-semibold text-dark small me-1">{{ auth()->user()->username }}</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-3 mt-2 p-0 overflow-hidden" style="min-width: 200px;">
-                            <li class="px-3 py-2.5 bg-light border-bottom">
-                                <span class="d-block text-muted extra-small text-uppercase fw-bold">Signed in as</span>
+                            <li class="px-3 py-2 bg-light border-bottom">
+                                <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Signed in as</span>
                                 <span class="fw-bold text-dark small d-block text-truncate">{{ auth()->user()->username }}</span>
-                                <span class="badge bg-secondary-subtle text-secondary border rounded-pill extra-small mt-1">
+                                <span class="badge bg-secondary-subtle text-secondary border rounded-pill mt-1" style="font-size: 0.65rem;">
                                     @if(auth()->user()->role_id == 1) Admin
                                     @elseif(auth()->user()->role_id == 2) Employer
                                     @else Applicant @endif
@@ -233,8 +240,8 @@
                 @endauth
 
                 @guest
-                    <a href="{{ route('login.perform') }}" class="btn btn-rms-outline rounded-pill px-3">Log In</a>
-                    <a href="{{ route('register.perform') }}" class="btn btn-rms-primary rounded-pill px-3">Register</a>
+                    <a href="{{ route('login.show') }}" class="btn btn-rms-outline rounded-pill px-3">Log In</a>
+                    <a href="{{ route('register.show') }}" class="btn btn-rms-primary rounded-pill px-3">Register</a>
                 @endguest
             </div>
         </div>

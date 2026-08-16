@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
 
 class LoginPageTest extends TestCase
@@ -15,6 +16,7 @@ class LoginPageTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware(VerifyCsrfToken::class);
         $this->seed();
+        RateLimiter::clear('test-user|127.0.0.1');
     }
 
     public function test_login_page_does_not_require_a_browser_only_captcha(): void
@@ -23,7 +25,7 @@ class LoginPageTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('Login')
+            ->assertSee('Sign In')
             ->assertDontSee('cpatchaTextBox')
             ->assertDontSee('createCaptcha');
     }

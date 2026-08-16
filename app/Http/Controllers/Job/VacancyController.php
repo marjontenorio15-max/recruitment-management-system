@@ -147,27 +147,47 @@ class VacancyController extends Controller
 
     public function getVacancies(Request $request)
     {
-        $vacancies = DB::table('tbl_job_list')->select('tbl_job_list.id as id', 'title', 'company_id',
-            'location', 'degree', 'no_of_employee', 'salary', 'sex', 'work_exp', 'job_desc',
-            'users.username as created_by', 'tbl_job_list.created_at as created_at', 'tbl_job_list.status')
+        $vacancies = DB::table('tbl_job_list')
+            ->select(
+                'tbl_job_list.id as id',
+                'tbl_job_list.title',
+                'tbl_job_list.company_id',
+                'tbl_job_list.location',
+                'tbl_job_list.degree',
+                'tbl_job_list.no_of_employee',
+                'tbl_job_list.salary',
+                'tbl_job_list.sex',
+                'tbl_job_list.work_exp',
+                'tbl_job_list.job_desc',
+                'users.name as created_by',
+                'users.username',
+                'companies.company_name',
+                'tbl_job_list.created_at',
+                'tbl_job_list.status'
+            )
             ->leftJoin('users', 'users.id', '=', 'tbl_job_list.created_by')
+            ->leftJoin('companies', 'companies.company_id', '=', 'tbl_job_list.company_id')
             ->orderBy('tbl_job_list.created_at', 'desc');
-        if (isset($request->title)) {
-            $vacancies = $vacancies->where('tbl_job_list.title', 'like', '%'.$request->title.'%');
+
+        if ($request->filled('title')) {
+            $vacancies->where('tbl_job_list.title', 'like', '%'.$request->title.'%');
         }
 
-        if (isset($request->created_by)) {
-            $vacancies = $vacancies->where('users.username', 'like', '%'.$request->created_by.'%');
+        if ($request->filled('created_by')) {
+            $vacancies->where(function ($q) use ($request) {
+                $q->where('users.name', 'like', '%'.$request->created_by.'%')
+                    ->orWhere('users.username', 'like', '%'.$request->created_by.'%')
+                    ->orWhere('companies.company_name', 'like', '%'.$request->created_by.'%');
+            });
         }
 
-        if (isset($request->location)) {
-            $vacancies = $vacancies->where('tbl_job_list.location', 'like', '%'.$request->location.'%');
+        if ($request->filled('location')) {
+            $vacancies->where('tbl_job_list.location', 'like', '%'.$request->location.'%');
         }
 
         $vacancies = $vacancies->get();
 
         return response()->json(['vacancies' => $vacancies]);
-
     }
 
     public function getBestApplicant(Request $request)

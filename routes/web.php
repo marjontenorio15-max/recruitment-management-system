@@ -46,7 +46,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::view('/job-details', 'pages.job-details')->name('job-details');
     Route::view('/job_list', 'pages.job-list')->name('job-list');
 
-    Route::get('/getVacancies', [VacancyController::class, 'getVacancies']);
+    Route::get('/getVacancies', [VacancyController::class, 'getVacancies'])->name('vacancies.active');
     Route::get('/getBestApplicant', [VacancyController::class, 'getBestApplicant']);
 
     // Contact Form
@@ -57,7 +57,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::get('forget-password', [ForgotPasswordController::class, 'showForgetPasswordForm'])->name('forget.password.get');
     Route::post('forget-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->name('forget.password.post');
     Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset.password.get');
-    Route::post('reset-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->name('reset.password.post');
+    Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->name('reset.password.post');
 
     /*
     |--------------------------------------------------------------------------
@@ -102,7 +102,6 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
 
         // Vacancy & Applications
         Route::resource('/vacancy', VacancyController::class)->names('vacancy');
-        Route::get('/success{id}', [VacancyController::class, 'success']);
         Route::view('/success', 'vacancy.success')->name('success');
         Route::get('/status-update/{id}', [VacancyController::class, 'updateStatus'])->name('status-update');
 
@@ -117,7 +116,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
         Route::view('/edit_applicant_account', 'applicant.edit-account')->name('edit_applicant_account');
         Route::view('/employer-profile', 'employer.employer-profile')->name('employer-profile');
         Route::view('/profile', 'applicant.partials.profile')->name('profile');
-        Route::post('/edit_profile', [RegisterController::class, 'edit_profile']);
+        Route::post('/edit_profile', [RegisterController::class, 'edit_profile'])->name('edit_profile');
         Route::view('/show-employer', 'employer.show-employer')->name('show-employer');
         Route::view('/create-employer', 'employer.create-employer')->name('create-employer');
 
@@ -157,7 +156,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
         Route::post('save_file', [UploadController::class, 'myFileSave'])->name('save-file');
 
         // Reports & Misc Utilities
-        Route::get('/reports.index', [ApplyController::class, 'get_applicants'])->name('reports.index');
+        Route::get('/generate-reports', [ApplyController::class, 'get_applicants'])->name('reports.index');
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::post('users-send-email', [UserController::class, 'sendEmail'])->name('ajax.send.email');
 
