@@ -128,8 +128,6 @@
   </form>
 </div>
 
-<script src="{{asset('assets/js/jquery.min.js')}}"></script>
-<script src="{{asset('assets/js/moment.min.js')}}"></script>
 <script type="text/javascript">
   $(document).ready(function() {
     GetEB();
@@ -163,7 +161,7 @@
 
     function GetEB() {
         $.ajax({
-            url: "getEB",
+            url: "{{ url('/getEB') }}",
             data: null,
             beforeSend: function() {
                 var html ='<td colspan="8">Loading...</td>';
@@ -171,16 +169,16 @@
             },
             success: function(result){
                 var html = '';
-                if(result.data.length > 0) {
+                if(result && result.data && result.data.length > 0) {
                     for (var index = 0; index < result.data.length; index++) {
                       html += '<tr>';
                          html += '<td scope="row"><b>' + (index + 1) + '</b></td>';
-                         html += '<td>' + result.data[index].school_name + '</td>';
-                         html += '<td>' + result.data[index].school_location + '</td>';
-                         html += '<td>' + result.data[index].degree + '</td>';
-                         html += '<td>' + result.data[index].field_of_study + '</td>';
-                         html += '<td>' + result.data[index].month_graduate + '</td>';
-                         html += '<td>' + result.data[index].year_graduate + '</td>';
+                         html += '<td>' + (result.data[index].school_name || '') + '</td>';
+                         html += '<td>' + (result.data[index].school_location || '') + '</td>';
+                         html += '<td>' + (result.data[index].degree || '') + '</td>';
+                         html += '<td>' + (result.data[index].field_of_study || '') + '</td>';
+                         html += '<td>' + (result.data[index].month_graduate || '') + '</td>';
+                         html += '<td>' + (result.data[index].year_graduate || '') + '</td>';
                          html += '<td>';
                          html += '<div class="btn-group shadow">';
                              html += '<button class="btnEditEB btn btn-outline-primary shadow icon-edit" eb-id="' + result.data[index].id + '"></button>';
@@ -202,33 +200,35 @@
 
     function GetEBById(id) {
         $.ajax({
-            url: "getEBById",
+            url: "{{ url('/getEBById') }}",
             data: {
                 id: id,
             },
             beforeSend: function() {
-                
+
             },
             success: function(result){
-                $('.frmSaveEB input[name="eb_id"]').val(result.data.id);
-                $('.frmSaveEB input[name="school_name"]').val(result.data.school_name);
-                $('.frmSaveEB input[name="school_location"]').val(result.data.school_location);
-                $('.frmSaveEB select[name="degree"]').val(result.data.degree);
-                $('.frmSaveEB input[name="field_of_study"]').val(result.data.field_of_study);
-                $('.frmSaveEB input[name="month_graduate"]').val(result.data.month_graduate);
-                $('.frmSaveEB input[name="year_graduate"]').val(result.data.year_graduate);
-                $('#mdlAddEB').modal('show');
+                if(result && result.data) {
+                    $('.frmSaveEB input[name="eb_id"]').val(result.data.id);
+                    $('.frmSaveEB input[name="school_name"]').val(result.data.school_name);
+                    $('.frmSaveEB input[name="school_location"]').val(result.data.school_location);
+                    $('.frmSaveEB select[name="degree"]').val(result.data.degree);
+                    $('.frmSaveEB input[name="field_of_study"]').val(result.data.field_of_study);
+                    $('.frmSaveEB input[name="month_graduate"]').val(result.data.month_graduate);
+                    $('.frmSaveEB input[name="year_graduate"]').val(result.data.year_graduate);
+                    $('#mdlAddEB').modal('show');
+                }
             }
         });
     }
 
     function SaveEB() {
         $.ajax({
-            url: "saveEB",
+            url: "{{ url('/saveEB') }}",
             data: $('.frmSaveEB').serialize(),
             method: 'post',
             beforeSend: function() {
-                
+
             },
             success: function(result){
                 GetEB();
@@ -241,11 +241,11 @@
 
     function DeleteEB() {
         $.ajax({
-            url: "deleteEB",
+            url: "{{ url('/deleteEB') }}",
             data: $('.frmDeleteEB').serialize(),
             method: 'post',
             beforeSend: function() {
-                
+
             },
             success: function(result){
                 GetEB();

@@ -10,7 +10,7 @@
             <div class="card-body">
                 <div class="m-3">
                     @if(auth()->check())
-                        @if((auth()->user()->role_id == 1) ^ (auth()->user()->role_id == 2))
+                        @if(in_array(auth()->user()->role_id, [1, 2]))
                             <div class="m-3">
                                 <a class="btn btn-outline-dark shadow mb-3 icon-back" href="{{ route('vacancy.index') }}"> Back</a>
                             </div>

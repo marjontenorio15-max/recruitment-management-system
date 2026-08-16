@@ -24,11 +24,6 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
 Route::group(['middleware' => 'prevent-back-history'], function () {
@@ -115,6 +110,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
         Route::view('/account-profile', 'applicant.accounts')->name('account-profile');
         Route::view('/edit_applicant_account', 'applicant.edit-account')->name('edit_applicant_account');
         Route::view('/employer-profile', 'employer.employer-profile')->name('employer-profile');
+        Route::post('/employer-profile', [CompanyController::class, 'updateEmployerProfile'])->name('employer-profile.update');
         Route::view('/profile', 'applicant.partials.profile')->name('profile');
         Route::post('/edit_profile', [RegisterController::class, 'edit_profile'])->name('edit_profile');
         Route::view('/show-employer', 'employer.show-employer')->name('show-employer');

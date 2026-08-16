@@ -78,4 +78,30 @@ class CompanyController extends Controller
         return redirect()->route('company.index')
             ->with('success', 'Post deleted successfully');
     }
+
+    public function updateEmployerProfile(Request $request)
+    {
+        $request->validate([
+            'company_name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'contact_no' => 'required',
+        ]);
+
+        Company::updateOrCreate(
+            ['company_id' => auth()->id()],
+            [
+                'company_name' => $request->company_name,
+                'address' => $request->address,
+                'contact_no' => $request->contact_no,
+            ]
+        );
+
+        if ($request->filled('name')) {
+            User::where('id', auth()->id())->update([
+                'name' => $request->name,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Employer company profile updated successfully.');
+    }
 }

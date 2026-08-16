@@ -5,30 +5,30 @@
     .tracking-wide { letter-spacing: 0.05em; }
 
     .job-scroll-container::-webkit-scrollbar { width: 5px; }
-    .job-scroll-container::-webkit-scrollbar-track { background: #f1f5f9; }
-    .job-scroll-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .job-scroll-container::-webkit-scrollbar-track { background: #f8fafc; }
+    .job-scroll-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
     .job-scroll-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
     .search-filter-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03);
     }
 
     .search-input-group {
         border: 1px solid #e2e8f0;
         background-color: #f8fafc;
-        transition: all 0.2s ease;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .search-input-group:focus-within {
         background-color: #ffffff;
         border-color: #0f172a;
-        box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.06);
     }
 
     .job-item-card {
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         cursor: pointer;
         border: 1px solid #e2e8f0;
         position: relative;
@@ -36,14 +36,14 @@
 
     .job-item-card:hover {
         border-color: #cbd5e1;
-        box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.08) !important;
+        box-shadow: 0 10px 20px -4px rgba(15, 23, 42, 0.06) !important;
         transform: translateY(-2px);
     }
 
     .job-item-card.active {
         background-color: #ffffff !important;
         border-color: #0f172a !important;
-        box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.1) !important;
+        box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08) !important;
     }
 
     .job-item-card.active::before {
@@ -54,24 +54,25 @@
         bottom: -1px;
         width: 4px;
         background-color: #e31837;
-        border-top-left-radius: 8px;
-        border-bottom-left-radius: 8px;
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
     }
 
     .detail-header-panel {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: linear-gradient(135deg, #090d16 0%, #1e293b 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .metric-highlight-box {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        transition: border-color 0.2s ease;
+        border-radius: 12px;
+        transition: all 0.2s ease;
     }
 
     .metric-highlight-box:hover {
         border-color: #cbd5e1;
+        background: #ffffff;
     }
 </style>
 

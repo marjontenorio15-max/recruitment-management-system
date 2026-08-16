@@ -230,26 +230,23 @@
                     {{--                        <a href="{{route('term')}}">terms and condition</a>--}}
                     {{--                    </div>--}}
                     <div class="form-group">
-                        <form action="{{route('save-file')}}" method="post" enctype="multipart/form-data">
-                            @csrf
-                            <div class="card">
-                                <div class="card-header bg-info text-white text-center m-3">
-                                    Upload Resume
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-control">
-                                        <input class="form-control shadow" name="myfile" type="file"
-                                               accept="application/pdf"
-                                               wire:model="file_attachment">
-                                        @error('file_attachment') <span class="text-danger">{{ $message }}</span>@enderror
-                                    </div>
-                                    <br>
-                                    @if($applicants_info->file_attachment != null)
-                                        <a href='<?php echo asset("storage/uploads/$applicants_info->file_attachment")?>' target="_blank" style="color: blue;"><span class="icon-download"></span> Uploaded Resume</a>
-                                    @endif
-                                </div>
+                        <div class="card">
+                            <div class="card-header bg-info text-white text-center m-3">
+                                Upload Resume
                             </div>
-                        </form>
+                            <div class="card-body">
+                                <div class="form-control">
+                                    <input class="form-control shadow" name="myfile" type="file"
+                                           accept="application/pdf"
+                                           wire:model="file_attachment">
+                                    @error('file_attachment') <span class="text-danger">{{ $message }}</span>@enderror
+                                </div>
+                                <br>
+                                @if($applicants_info?->file_attachment != null)
+                                    <a href='<?php echo asset("storage/uploads/{$applicants_info->file_attachment}")?>' target="_blank" style="color: blue;"><span class="icon-download"></span> Uploaded Resume</a>
+                                @endif
+                            </div>
+                        </div>
                     </div>
 
 
@@ -258,25 +255,25 @@
                     <div class="form-group">
                         <label class="col-form-label" for="street_address">Street Address:</label>
                         <input class="form-control input-sm" id="street_address"
-                               placeholder="Street Address:" type="text" wire:model="street_address" name="street_address" value="{{ $applicants_info->street_address }}">
+                               placeholder="Street Address:" type="text" wire:model="street_address" name="street_address" value="{{ $applicants_info?->address ?? '' }}">
                         @error('street_address') <span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">
                         <label class="col-form-label" for="city">City:</label>
                         <input class="form-control input-sm" id="city"
-                               placeholder="City:" type="text" wire:model="city" name="city" value="{{ $applicants_info->city }}">
+                               placeholder="City:" type="text" wire:model="city" name="city" value="{{ $applicants_info?->city ?? '' }}">
                         @error('city') <span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">
                         <label class="col-form-label" for="state">State/province/area:</label>
                         <input class="form-control input-sm" id="state"
-                               placeholder="State:" type="text" wire:model="state" name="state" value="{{ $applicants_info->state }}">
+                               placeholder="State:" type="text" wire:model="state" name="state" value="{{ $applicants_info?->state ?? '' }}">
                         @error('state') <span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">
                         <label class="col-form-label" for="zipcode">Zip Code:</label>
                         <input class="form-control input-sm" id="zipcode"
-                               placeholder="Street Address:" type="text" wire:model="zipcode" name="zipcode" value="{{ $applicants_info->zipcode }}">
+                               placeholder="Street Address:" type="text" wire:model="zipcode" name="zipcode" value="{{ $applicants_info?->zipcode ?? '' }}">
                         @error('zipcode') <span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                     {{--                        <label class="col-form-label" for="email_address">Email Address:</label>--}}
@@ -330,9 +327,6 @@
 {{--</div>--}}
 {{--@endsection--}}
 
-<script src="{{asset('assets/js/jquery.min.js')}}"></script>
-<script src="{{asset('assets/js/moment.min.js')}}"></script>
-
 <script type="text/javascript">
     $(document).ready(function(){
         $('.frmEditProfile').submit(function(e){
@@ -343,7 +337,7 @@
 
     function EditProfile() {
         $.ajax({
-            url: "edit_profile",
+            url: "{{ url('/edit_profile') }}",
             data: new FormData($('.frmEditProfile')[0]),
             type : 'POST',
             processData: false,

@@ -28,7 +28,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">                        
+                <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12" style="display: none;">
                            <div class="form-group">
                                <input type="text" name="applicant_id" class="form-control" value="{{auth()->user()->id}}">
@@ -121,8 +121,6 @@
 
 <input type="text" class="txtStorage" value="<?php echo asset("storage/uploads/file_name")?>" style="display: none;">
 
-<script src="{{asset('assets/js/jquery.min.js')}}"></script>
-<script src="{{asset('assets/js/moment.min.js')}}"></script>
 <script type="text/javascript">
   $(document).ready(function() {
     GetWE();
@@ -157,7 +155,7 @@
 
     function GetWE() {
         $.ajax({
-            url: "getWE",
+            url: "{{ url('/getWE') }}",
             data: null,
             beforeSend: function() {
                 var html ='<td colspan="8">Loading...</td>';
@@ -165,14 +163,14 @@
             },
             success: function(result){
                 var html = '';
-                if(result.data.length > 0) {
+                if(result && result.data && result.data.length > 0) {
                     for (var index = 0; index < result.data.length; index++) {
                       html += '<tr>';
                          html += '<td scope="row"><b>' + (index + 1) + '</b></td>';
-                         html += '<td>' + result.data[index].job_title + '</td>';
-                         html += '<td>' + result.data[index].company_name + '</td>';
-                         html += '<td>' + result.data[index].period_employed + '</td>';
-                         html += '<td>' + result.data[index].achievements + '</td>';
+                         html += '<td>' + (result.data[index].job_title || '') + '</td>';
+                         html += '<td>' + (result.data[index].company_name || '') + '</td>';
+                         html += '<td>' + (result.data[index].period_employed || '') + '</td>';
+                         html += '<td>' + (result.data[index].achievements || '') + '</td>';
                          if(result.data[index].certificate != null && result.data[index].certificate != '') {
                           html += '<td><a href="' + storage.replace('file_name', result.data[index].certificate)  + '" target="_blank" style="color: blue;"><span class="icon-download"></span> Download</a></td>';
                          }
@@ -200,34 +198,36 @@
 
     function GetWEById(id) {
         $.ajax({
-            url: "getWEById",
+            url: "{{ url('/getWEById') }}",
             data: {
                 id: id,
             },
             beforeSend: function() {
-                
+
             },
             success: function(result){
-                $('.frmSaveWE input[name="we_id"]').val(result.data.id);
-                $('.frmSaveWE input[name="applicant_id"]').val(result.data.applicant_id);
-                $('.frmSaveWE input[name="job_title"]').val(result.data.job_title);
-                $('.frmSaveWE input[name="company_name"]').val(result.data.company_name);
-                $('.frmSaveWE select[name="period_employed"]').val(result.data.period_employed);
-                $('.frmSaveWE textarea[name="achievements"]').val(result.data.achievements);
-                $('#mdlAddWE').modal('show');
+                if(result && result.data) {
+                    $('.frmSaveWE input[name="we_id"]').val(result.data.id);
+                    $('.frmSaveWE input[name="applicant_id"]').val(result.data.applicant_id);
+                    $('.frmSaveWE input[name="job_title"]').val(result.data.job_title);
+                    $('.frmSaveWE input[name="company_name"]').val(result.data.company_name);
+                    $('.frmSaveWE select[name="period_employed"]').val(result.data.period_employed);
+                    $('.frmSaveWE textarea[name="achievements"]').val(result.data.achievements);
+                    $('#mdlAddWE').modal('show');
+                }
             }
         });
     }
 
     function SaveWE() {
         $.ajax({
-            url: "saveWE",
+            url: "{{ url('/saveWE') }}",
             data: new FormData($('.frmSaveWE')[0]),
             method: 'post',
             processData: false,
             contentType: false,
             beforeSend: function() {
-                
+
             },
             success: function(result){
                 GetWE();
@@ -240,11 +240,11 @@
 
     function DeleteWE() {
         $.ajax({
-            url: "deleteWE",
+            url: "{{ url('/deleteWE') }}",
             data: $('.frmDeleteWE').serialize(),
             method: 'post',
             beforeSend: function() {
-                
+
             },
             success: function(result){
                 GetWE();

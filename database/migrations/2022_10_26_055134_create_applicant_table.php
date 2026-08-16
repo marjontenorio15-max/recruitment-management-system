@@ -16,28 +16,25 @@ return new class extends Migration
         Schema::create('applicants', function (Blueprint $table) {
             $table->id();
             $table->string('applicant_id');
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('middle_name');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('middle_name')->nullable();
 
-            $table->string('address');
-            $table->string('city');
-            $table->string('state');
-            $table->string('zipcode');
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('zipcode')->nullable();
 
-
-            $table->string('sex');
-            $table->string('civil_status');
-            $table->date('birth_date');
-            $table->string('birth_place');
-            $table->bigInteger('age');
-//            $table->string('user_name')->unique();
-//            $table->string('password');
-            $table->string('email_address');
-            $table->bigInteger('contact_no');
-            $table->string('degree');
-            $table->string('file_attachment');
-            $table->string('remarks');
+            $table->string('sex')->nullable();
+            $table->string('civil_status')->nullable();
+            $table->date('birth_date')->nullable();
+            $table->string('birth_place')->nullable();
+            $table->bigInteger('age')->nullable();
+            $table->string('email_address')->nullable();
+            $table->string('contact_no')->nullable();
+            $table->string('degree')->nullable();
+            $table->string('file_attachment')->nullable();
+            $table->string('remarks')->nullable()->default('Pending');
             $table->timestamps();
         });
     }

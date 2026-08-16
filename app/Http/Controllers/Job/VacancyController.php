@@ -12,24 +12,36 @@ class VacancyController extends Controller
 {
     public function index()
     {
-        //        $vacancies = Vacancy::latest()->paginate(5);
+        $query = Vacancy::select(
+            'tbl_job_list.id as id',
+            'tbl_job_list.title',
+            'tbl_job_list.location',
+            'tbl_job_list.no_of_employee',
+            'tbl_job_list.salary',
+            'tbl_job_list.sex',
+            'tbl_job_list.work_exp',
+            'tbl_job_list.job_desc',
+            'users.name as created_by',
+            'users.username',
+            'companies.company_name',
+            'tbl_job_list.created_at',
+            'tbl_job_list.status'
+        )
+            ->leftJoin('users', 'users.id', '=', 'tbl_job_list.created_by')
+            ->leftJoin('companies', 'companies.company_id', '=', 'tbl_job_list.company_id')
+            ->orderBy('tbl_job_list.created_at', 'desc');
 
-        $vacancies = Vacancy::where('tbl_job_list.company_id', auth()->user()->id)->select('tbl_job_list.id as id', 'title',
-            'tbl_job_list.location', 'no_of_employee', 'salary', 'sex', 'work_exp', 'job_desc',
-            'users.username as created_by', 'tbl_job_list.created_at as created_at',
-            'users.username as company_name', 'status')->
-            leftJoin('users', 'users.id', '=', 'tbl_job_list.created_by')->
-            orderBy('tbl_job_list.created_at', 'desc')->simplePaginate(5);
+        if (auth()->user()->role_id != 1) {
+            $query->where(function ($q) {
+                $q->where('tbl_job_list.company_id', auth()->user()->id)
+                    ->orWhere('tbl_job_list.created_by', auth()->user()->id);
+            });
+        }
 
-        //        $vacancies = DB::table('tbl_job_list')->select('tbl_job_list');
-
-        //        $vacancies = DB::table('companies')->select('tbl_job_list.title', 'companies.company_id', 'tbl_job_list.job_details',
-        //            'tbl_job_list.created_by', 'companies.company_name')->join('tbl_job_list', 'companies.company_id', 'tbl_job_list.company_id' )
-        //            ->simplePaginate(5);
+        $vacancies = $query->paginate(10);
 
         return view('vacancy.index', compact('vacancies'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
-
+            ->with('i', (request()->input('page', 1) - 1) * 10);
     }
 
     public function create()

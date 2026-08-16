@@ -9,7 +9,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
@@ -25,7 +24,7 @@ class RegisterController extends Controller
 
         auth()->login($user);
 
-        return redirect('/')->with('success', 'Account successfully registered.');
+        return redirect('/view-jobs')->with('success', 'Account successfully registered.');
     }
 
     public function sendOTP(Request $request)
@@ -70,9 +69,13 @@ class RegisterController extends Controller
 
                 session()->forget(['otp', 'otp_email']);
 
-                return response()->json(['result' => 1, 'message' => 'Registration successful!']);
+                return response()->json([
+                    'result' => 1,
+                    'message' => 'Registration successful!',
+                    'redirect' => url('/view-jobs'),
+                ]);
             } catch (\Throwable $e) {
-                return response()->json(['result' => 0, 'message' => 'Registration failed.']);
+                return response()->json(['result' => 0, 'message' => 'Registration failed: '.$e->getMessage()]);
             }
         }
 
@@ -116,20 +119,39 @@ class RegisterController extends Controller
     private function storeUserAndApplicant(Request $request, int $roleId): User
     {
         return DB::transaction(function () use ($request, $roleId) {
+            $username = $request->filled('username')
+                ? $request->username
+                : explode('@', $request->email)[0];
+
             $user = User::create([
                 'name' => trim("{$request->firstname} {$request->middlename} {$request->lastname}"),
+                'firstname' => $request->firstname,
+                'lastname' => $request->lastname,
+                'middlename' => $request->middlename,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'username' => $username,
+                'password' => $request->password, // Hashed automatically by User model mutator
                 'role_id' => $roleId,
             ]);
 
             Applicant::create([
                 'applicant_id' => $user->id,
-                'first_name' => $request->firstname,
-                'last_name' => $request->lastname,
-                'middle_name' => $request->middlename,
-                'email_address' => $request->email,
+                'first_name' => $request->firstname ?? '',
+                'last_name' => $request->lastname ?? '',
+                'middle_name' => $request->middlename ?? '',
+                'address' => $request->address ?? '',
+                'city' => $request->city ?? '',
+                'state' => $request->state ?? '',
+                'zipcode' => $request->zipcode ?? '',
+                'sex' => $request->sex ?? '',
+                'civil_status' => $request->civil_status ?? '',
                 'birth_date' => $request->birth_date ?? null,
+                'birth_place' => $request->birth_place ?? '',
+                'age' => $request->age ?? 0,
+                'email_address' => $request->email ?? '',
+                'contact_no' => $request->contact_no ?? 0,
+                'degree' => $request->degree ?? '',
+                'file_attachment' => '',
                 'remarks' => 'Pending',
             ]);
 

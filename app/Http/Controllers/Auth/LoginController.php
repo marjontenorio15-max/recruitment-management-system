@@ -96,4 +96,17 @@ class LoginController extends Controller
 
         return $this->sendFailedLoginResponse($request);
     }
+
+    protected function authenticated(Request $request, $user)
+    {
+        if ((int) $user->role_id === 1) {
+            return redirect()->intended('/dashboard');
+        } elseif ((int) $user->role_id === 2) {
+            return redirect()->intended('/home');
+        } elseif ((int) $user->role_id === 3) {
+            return redirect()->intended('/view-jobs');
+        }
+
+        return redirect()->intended($this->redirectPath());
+    }
 }

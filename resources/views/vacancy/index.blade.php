@@ -117,19 +117,12 @@
                          <tr>
                              <td><b>{{ ++$i }}</b></td>
                              <td>{{ $vacancy->title }}</td>
-                             <td>{{ $vacancy->company_name}}</td>
+                             <td>{{ $vacancy->company_name ?? $vacancy->created_by ?? 'N/A' }}</td>
                              <td>
-                                 {{--                               <p>Required No. of Employee's:  {{$vacancy->no_of_employee}}</p>--}}
-                                 {{--                               <p>Salary:                      {{$vacancy->salary}}</p>--}}
-                                 {{--                               <p>Preferred Sex:               {{$vacancy->sex}}</p>--}}
-                                 {{--                               <p>Sector of Vacancy: {{ $vacancy->location}}</p>--}}
-                                 {{--                               <p>Qualification/Work Experience: {{$vacancy->work_exp}}</p>--}}
-                                 {{--                               <p>Job Description:              {{$vacancy->job_desc}}</p>--}}
-                                 {{--                               <p>location:                     {{$vacancy->location}}</p>--}}
                                  {{$vacancy->location}}
                              </td>
                            <!--   <td>{{ $vacancy->created_by }}</td> -->
-                             <td>{{date_format($vacancy->created_at, 'F d, Y')}}</td>
+                             <td>{{ $vacancy->created_at ? \Carbon\Carbon::parse($vacancy->created_at)->format('F d, Y') : 'N/A' }}</td>
                              <td>
 
                                  @if($vacancy->status == '1')
@@ -144,7 +137,7 @@
                                     <div class="btn-group">
                                         <a class="btn btn-outline-info shadow form-group icon-eye-7" href="{{ route('vacancy.show',$vacancy->id) }}"></a>
                                         <a class="btn btn-outline-primary shadow form-group icon-edit" href="{{ route('vacancy.edit',$vacancy->id) }}"></a>
-                                        <a href="#myModal{{ $vacancy->id }}" data-toggle="modal"
+                                        <a href="#myModal{{ $vacancy->id }}" data-bs-toggle="modal" data-bs-target="#myModal{{ $vacancy->id }}"
                                            class="btn btn-outline-danger icon-trash-7 form-group shadow"></a>
                                         <a href="javascript:;"
                                            class="btn btn-outline-success icon-users form-group shadow aBestApplicant" job-id="{{ $vacancy->id }}" title="View Best Applicant"></a>
@@ -161,13 +154,13 @@
                                                 <i class=" icon-cancel-1"></i>
                                             </div>
                                             <h4 class="modal-title w-100">Are you sure?</h4>
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <p>Do you really want to delete these records? This process cannot be undone.</p>
                                         </div>
                                         <div class="modal-footer justify-content-center">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                             <form action="{{ route('vacancy.destroy',$vacancy->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
@@ -254,7 +247,7 @@
 
     function GetBestApplicant(jobId) {
         $.ajax({
-            url: "getBestApplicant",
+            url: "{{ url('/getBestApplicant') }}",
             data: {
                 jobId: jobId,
             },

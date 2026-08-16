@@ -8,7 +8,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-lg-12 margin-tb">
-                        @if((auth()->user()->role_id == 1) ^ (auth()->user()->role_id == 2))
+                        @if(in_array(auth()->user()->role_id, [1, 2]))
                             <div class="pull-right">
                                 <a class="btn btn-outline-dark shadow icon-back m-3" href="{{ route('vacancy.index') }}"> Back</a><br><br>
                             </div>

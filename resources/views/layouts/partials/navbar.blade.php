@@ -130,8 +130,13 @@
                     @elseif(auth()->user()->role_id == 2)
                         <!-- Employer Links -->
                         <li class="nav-item">
-                            <a class="nav-link rms-nav-link {{ request()->routeIs('home.index') ? 'active' : '' }}" href="{{ route('home.index') }}">
+                            <a class="nav-link rms-nav-link {{ request()->routeIs('home*') ? 'active' : '' }}" href="{{ route('home') }}">
                                 <i class="bi bi-house-door"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link rms-nav-link {{ request()->routeIs('company.index') ? 'active' : '' }}" href="{{ route('company.index') }}">
+                                <i class="bi bi-building"></i> Companies
                             </a>
                         </li>
                         <li class="nav-item">
@@ -141,7 +146,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link rms-nav-link {{ request()->routeIs('vacancy.index') ? 'active' : '' }}" href="{{ route('vacancy.index') }}">
-                                <i class="bi bi-plus-circle"></i> Post Job
+                                <i class="bi bi-briefcase"></i> Vacancies
                             </a>
                         </li>
                         <li class="nav-item">
@@ -150,7 +155,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link rms-nav-link {{ request()->routeIs('account-profile') ? 'active' : '' }}" href="{{ route('account-profile') }}">
+                            <a class="nav-link rms-nav-link {{ request()->routeIs('employer-profile') ? 'active' : '' }}" href="{{ route('employer-profile') }}">
                                 <i class="bi bi-person-gear"></i> Profile
                             </a>
                         </li>
@@ -216,21 +221,45 @@
                     <div class="dropdown">
                         <button class="btn btn-light border rounded-pill px-3 py-1 d-flex align-items-center gap-2 dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="user-avatar-badge">
-                                {{ strtoupper(substr(auth()->user()->username ?? 'U', 0, 1)) }}
+                                {{ strtoupper(substr(auth()->user()->username ?? auth()->user()->name ?? 'U', 0, 1)) }}
                             </span>
-                            <span class="fw-semibold text-dark small me-1">{{ auth()->user()->username }}</span>
+                            <span class="fw-semibold text-dark small me-1">{{ auth()->user()->username ?? auth()->user()->name ?? 'Account' }}</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-3 mt-2 p-0 overflow-hidden" style="min-width: 200px;">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2 p-0 overflow-hidden" style="min-width: 220px;">
                             <li class="px-3 py-2 bg-light border-bottom">
                                 <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Signed in as</span>
-                                <span class="fw-bold text-dark small d-block text-truncate">{{ auth()->user()->username }}</span>
-                                <span class="badge bg-secondary-subtle text-secondary border rounded-pill mt-1" style="font-size: 0.65rem;">
-                                    @if(auth()->user()->role_id == 1) Admin
+                                <span class="fw-bold text-dark small d-block text-truncate">{{ auth()->user()->name ?? auth()->user()->username }}</span>
+                                <div class="text-muted extra-small text-truncate">{{ auth()->user()->email }}</div>
+                                <span class="badge bg-primary-subtle text-primary border rounded-pill mt-1" style="font-size: 0.65rem;">
+                                    @if(auth()->user()->role_id == 1) Administrator
                                     @elseif(auth()->user()->role_id == 2) Employer
                                     @else Applicant @endif
                                 </span>
                             </li>
                             <li class="p-1">
+                                @if(auth()->user()->role_id == 3)
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2 small" href="{{ route('account-profile') }}">
+                                        <i class="bi bi-person-circle text-primary"></i> My Profile
+                                    </a>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2 small" href="{{ route('applicant-dashboard') }}">
+                                        <i class="bi bi-journal-check text-success"></i> Applied Jobs
+                                    </a>
+                                @elseif(auth()->user()->role_id == 2)
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2 small" href="{{ route('employer-profile') }}">
+                                        <i class="bi bi-person-gear text-primary"></i> Employer Profile
+                                    </a>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2 small" href="{{ route('company.index') }}">
+                                        <i class="bi bi-building text-info"></i> Company Info
+                                    </a>
+                                @elseif(auth()->user()->role_id == 1)
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2 small" href="{{ route('dashboard.index') }}">
+                                        <i class="bi bi-speedometer2 text-primary"></i> Admin Dashboard
+                                    </a>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2 small" href="{{ route('users.index') }}">
+                                        <i class="bi bi-people text-secondary"></i> Manage Users
+                                    </a>
+                                @endif
+                                <hr class="dropdown-divider my-1">
                                 <a class="dropdown-item text-danger rounded-2 py-2 d-flex align-items-center gap-2 fw-medium small" href="{{ route('logout.perform') }}">
                                     <i class="bi bi-box-arrow-right fs-6"></i> Logout
                                 </a>
