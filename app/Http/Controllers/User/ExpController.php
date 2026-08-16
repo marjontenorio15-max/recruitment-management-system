@@ -61,9 +61,9 @@ class ExpController extends Controller
                 $fileName = time().'_'.$request->certificate->getClientOriginalName();
                 $filePath = $request->file('certificate')->storeAs('uploads', $fileName, 'public');
 
-                Exp::create(array_merge($request->all(), ['certificate' => $fileName]));
+                Exp::create(array_merge($request->all(), ['certificate' => $fileName, 'applicant_id' => auth()->user()->id]));
             } else {
-                Exp::create($request->all());
+                Exp::create(array_merge($request->all(), ['applicant_id' => auth()->user()->id]));
             }
         } else {
 

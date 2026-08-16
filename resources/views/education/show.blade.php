@@ -1,86 +1,74 @@
 @extends('layouts.app-master')
 
+@push('styles')
+<script src="https://cdn.tailwindcss.com"></script>
+@endpush
+
 @section('content')
+<div class="container-xl px-3 px-md-4 py-4 max-w-4xl mx-auto">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
 
-    <div class="container">
-        <div class="card shadow mt-3">
-            <div class="card-header bg-primary text-center">
-                <h2 class="text-white"> Show Details</h2>
-            </div>
-            <div class="card-body">
-                <a class="btn btn-outline-dark icon-back shadow" href="{{ route('educational_background.index') }}"> Back</a><br><br>
-
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong>School Name:</strong>
-                            {{ $educational_background->school_name }}
-                        </div>
+        {{-- Header --}}
+        <div class="p-4 p-md-5 bg-gradient text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-14 h-14 rounded-2xl bg-white text-primary font-extrabold text-2xl d-flex align-items-center justify-content-center shadow-md">
+                        <i class="bi bi-mortarboard-fill"></i>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong>School Location:</strong>
-                            {{ $educational_background->school_location }}
-                        </div>
+                    <div>
+                        <span class="badge bg-white/20 text-white rounded-pill text-[0.65rem] font-bold uppercase tracking-wider mb-1">Academic Credential</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-0">{{ $educational_background->school_name }}</h2>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong>Degree:</strong>
-                            {{ $educational_background->degree }}
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong>Field of Study:</strong>
-                            {{ $educational_background->field_of_study }}
-                        </div>
-                    </div>
+                <div class="d-flex gap-2 self-start sm:self-auto">
+                    <a class="btn btn-light rounded-pill px-3.5 py-2 font-semibold text-xs shadow-sm d-inline-flex align-items-center gap-1.5" href="{{ route('educational_background.edit', $educational_background->id) }}">
+                        <i class="bi bi-pencil"></i>
+                        <span>Edit</span>
+                    </a>
+                    <a class="btn btn-outline-light rounded-pill px-3.5 py-2 font-semibold text-xs d-inline-flex align-items-center gap-1.5" href="{{ route('educational_background.index') }}">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Back</span>
+                    </a>
                 </div>
-
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong>Month Graduate:</strong>
-                            {{ $educational_background->month_graduate}}
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong>Year Graduate:</strong>
-                            {{ $educational_background->year_graduate }}
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </div>
-{{--    <div class="row">--}}
-{{--        <div class="col-lg-12 margin-tb">--}}
-{{--            <div class="pull-left">--}}
-{{--                <h2> Show Product</h2>--}}
-{{--            </div>--}}
-{{--            <div class="pull-right">--}}
-{{--                <a class="btn btn-primary" href="{{ route('educational_background.index') }}"> Back</a>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
 
-{{--    <div class="row">--}}
-{{--        <div class="col-xs-12 col-sm-12 col-md-12">--}}
-{{--            <div class="form-group">--}}
-{{--                <strong>Title:</strong>--}}
-{{--                {{ $educational_background->title }}--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--        <div class="col-xs-12 col-sm-12 col-md-12">--}}
-{{--            <div class="form-group">--}}
-{{--                <strong>Description:</strong>--}}
-{{--                {{ $educational_background->description }}--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
+        {{-- Body --}}
+        <div class="p-4 p-md-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider d-block mb-1">School / Institution</span>
+                    <div class="font-bold text-slate-900 text-base">{{ $educational_background->school_name }}</div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider d-block mb-1">School Location</span>
+                    <div class="font-bold text-slate-900 text-base flex items-center gap-1.5">
+                        <i class="bi bi-geo-alt text-rose-500"></i>
+                        <span>{{ $educational_background->school_location }}</span>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider d-block mb-1">Degree Attained</span>
+                    <div class="font-bold text-slate-900 text-base">{{ $educational_background->degree }}</div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider d-block mb-1">Field of Study</span>
+                    <div class="font-bold text-slate-900 text-base">{{ $educational_background->field_of_study }}</div>
+                </div>
+
+                <div class="col-span-1 sm:col-span-2 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider d-block mb-1">Graduation Date</span>
+                    <div class="font-bold text-slate-900 text-base flex items-center gap-1.5">
+                        <i class="bi bi-calendar-check text-emerald-600"></i>
+                        <span>{{ $educational_background->month_graduate }} {{ $educational_background->year_graduate }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 @endsection

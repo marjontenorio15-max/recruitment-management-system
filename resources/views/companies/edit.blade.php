@@ -1,123 +1,82 @@
 @extends('layouts.app-master')
+
+@push('styles')
+<script src="https://cdn.tailwindcss.com"></script>
+@endpush
+
 @section('content')
-    <div class="container">
-        <div class="card shadow mt-3">
-            <div class="card-header bg-primary">
-                <h2 class="text-center text-white">Edit Product</h2>
-            </div>
-                <div class="card-body">
-                    <a class="btn btn-outline-dark shadow icon-back m-3 " href="{{ route('company.index') }}"> Back</a>
+<div class="container-xl px-3 px-md-4 py-4 max-w-4xl mx-auto">
 
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <strong>Whoops!</strong> There were some problems with your input.<br><br>
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
 
-                    <form action="{{ route('company.update',$company->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="row">
-                            {{--                    <div class="col-xs-12 col-sm-12 col-md-12">--}}
-                            {{--                        <div class="form-group">--}}
-                            {{--                            <strong>Company ID:</strong>--}}
-                            {{--                            <input type="number" value="{{ $company->company_id}}" name="company_id" class="form-control" placeholder="Enter Company ID">--}}
-                            {{--                        </div>--}}
-                            {{--                    </div>--}}
-                            <div class="col-xs-12 col-sm-12 col-md-12">
-                                <div class="form-group">
-                                    <strong>Company Name:</strong>
-                                    <input type="text" value="{{ $company->company_name}}" name="company_name" class="form-control" placeholder="Enter Company Name">
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-12 col-md-12">
-                                <div class="form-group">
-                                    <strong>Address:</strong>
-                                    <input type="text" value="{{ $company->address}}" name="address" class="form-control" placeholder="Enter Address">
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-12 col-md-12">
-                                <div class="form-group">
-                                    <strong>Contact Number:</strong>
-                                    <input type="number" value="{{ $company->contact_no}}" name="contact_no" class="form-control" placeholder="Enter Contact Number">
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                                <button type="submit" class="btn btn-outline-success shadow icon-check-1">Submit</button>
-                            </div>
-                        </div>
-
-                    </form>
-
-
+        {{-- Header --}}
+        <div class="p-4 p-md-5 bg-gradient text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 backdrop-blur-md mb-2 text-xs font-semibold uppercase text-rose-300">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Update Information</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">Edit Company Details</h2>
+                    <p class="text-slate-300 text-xs sm:text-sm mb-0">{{ $company->company_name }}</p>
                 </div>
+                <a class="btn btn-light rounded-pill px-4 py-2 font-semibold text-xs shadow-sm d-inline-flex align-items-center gap-2 self-start sm:self-auto" href="{{ route('company.index') }}">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Back to Directory</span>
+                </a>
+            </div>
+        </div>
+
+        {{-- Validation Errors --}}
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show rounded-0 border-0 m-0 p-4 bg-rose-50 text-rose-800" role="alert">
+                <div class="font-bold text-sm mb-1 d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-octagon-fill text-rose-600"></i>
+                    <span>Please correct the errors below:</span>
+                </div>
+                <ul class="mb-0 text-xs list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        {{-- Form Body --}}
+        <div class="p-4 p-md-5">
+            <form action="{{ route('company.update', $company->id) }}" method="POST" class="space-y-4">
+                @csrf
+                @method('PUT')
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Company Name <span class="text-rose-500">*</span></label>
+                        <input type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="company_name" value="{{ old('company_name', $company->company_name) }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Contact Number <span class="text-rose-500">*</span></label>
+                        <input type="number" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="contact_no" value="{{ old('contact_no', $company->contact_no) }}" required>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Office Address <span class="text-rose-500">*</span></label>
+                        <input type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="address" value="{{ old('address', $company->address) }}" required>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 d-flex justify-content-end gap-3">
+                    <a href="{{ route('company.index') }}" class="btn btn-light rounded-pill px-4 text-xs font-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 text-xs font-semibold shadow-sm">
+                        <i class="bi bi-save me-1"></i> Update Company
+                    </button>
+                </div>
+            </form>
         </div>
 
     </div>
-{{--    <div class="container">--}}
-{{--        <div class="card m-3 p-3">--}}
-{{--            <div class="row">--}}
-{{--                <div class="col-lg-12 margin-tb">--}}
-{{--                    <div class="pull-left">--}}
-{{--                        <a class="btn btn-primary icon-back m-3 shadow" href="{{ route('company.index') }}"> Back</a>--}}
-{{--                        <h2 class="text-center">Edit Product</h2>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
 
-{{--            @if ($errors->any())--}}
-{{--                <div class="alert alert-danger">--}}
-{{--                    <strong>Whoops!</strong> There were some problems with your input.<br><br>--}}
-{{--                    <ul>--}}
-{{--                        @foreach ($errors->all() as $error)--}}
-{{--                            <li>{{ $error }}</li>--}}
-{{--                        @endforeach--}}
-{{--                    </ul>--}}
-{{--                </div>--}}
-{{--            @endif--}}
-
-{{--            <form action="{{ route('company.update',$company->id) }}" method="POST">--}}
-{{--                @csrf--}}
-{{--                @method('PUT')--}}
-
-{{--                <div class="row">--}}
-{{--                    <div class="col-xs-12 col-sm-12 col-md-12">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <strong>Company ID:</strong>--}}
-{{--                            <input type="number" value="{{ $company->company_id}}" name="company_id" class="form-control" placeholder="Enter Company ID">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-xs-12 col-sm-12 col-md-12">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <strong>Company Name:</strong>--}}
-{{--                            <input type="text" value="{{ $company->company_name}}" name="company_name" class="form-control" placeholder="Enter Company Name">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-xs-12 col-sm-12 col-md-12">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <strong>Address:</strong>--}}
-{{--                            <input type="text" value="{{ $company->address}}" name="address" class="form-control" placeholder="Enter Address">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-xs-12 col-sm-12 col-md-12">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <strong>Contact Number:</strong>--}}
-{{--                            <input type="number" value="{{ $company->contact_no}}" name="contact_no" class="form-control" placeholder="Enter Contact Number">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-xs-12 col-sm-12 col-md-12 text-center">--}}
-{{--                        <button type="submit" class="btn btn-primary">Submit</button>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-
-{{--            </form>--}}
-
-{{--        </div>--}}
-{{--    </div>--}}
+</div>
 @endsection
+

@@ -1,234 +1,188 @@
 @extends('layouts.app-master')
+
+@push('styles')
+<script src="https://cdn.tailwindcss.com"></script>
+@endpush
+
 @section('content')
-    <style>
+<div class="container-xl px-3 px-md-4 py-4 max-w-7xl mx-auto">
 
-        .modal-confirm {
-            color: #636363;
-            width: 400px;
-        }
-        .modal-confirm .modal-content {
-            padding: 20px;
-            border-radius: 5px;
-            border: none;
-            text-align: center;
-            font-size: 14px;
-        }
-        .modal-confirm .modal-header {
-            border-bottom: none;
-            position: relative;
-        }
-        .modal-confirm h4 {
-            text-align: center;
-            font-size: 26px;
-            margin: 30px 0 -10px;
-        }
-        .modal-confirm .close {
-            position: absolute;
-            top: -5px;
-            right: -2px;
-        }
-        .modal-confirm .modal-body {
-            color: #999;
-        }
-        .modal-confirm .modal-footer {
-            border: none;
-            text-align: center;
-            border-radius: 5px;
-            font-size: 13px;
-            padding: 10px 15px 25px;
-        }
-        .modal-confirm .modal-footer a {
-            color: #999;
-        }
-        .modal-confirm .icons-box {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto;
-            border-radius: 50%;
-            z-index: 9;
-            text-align: center;
-            border: 3px solid #f15e5e;
-        }
-        .modal-confirm .icons-box i {
-            color: #f15e5e;
-            font-size: 46px;
-            display: inline-block;
-            margin-top: 13px;
-        }
-        .modal-confirm .btn, .modal-confirm .btn:active {
-            color: #fff;
-            border-radius: 4px;
-            background: #60c7c1;
-            text-decoration: none;
-            transition: all 0.4s;
-            line-height: normal;
-            min-width: 120px;
-            border: none;
-            min-height: 40px;
-            border-radius: 3px;
-            margin: 0 5px;
-        }
-        .modal-confirm .btn-secondary {
-            background: #c1c1c1;
-        }
-        .modal-confirm .btn-secondary:hover, .modal-confirm .btn-secondary:focus {
-            background: #a8a8a8;
-        }
-        .modal-confirm .btn-danger {
-            background: #f15e5e;
-        }
-        .modal-confirm .btn-danger:hover, .modal-confirm .btn-danger:focus {
-            background: #ee3535;
-        }
-        .trigger-btn {
-            display: inline-block;
-            margin: 100px auto;
-        }
-    </style>
-    <link href="{{asset('assets/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-    <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet">
-   <div class="container">
-      <div class="card m-3 shadow">
-          @php use App\Models\Applicant; @endphp
-          @auth()
-              @if((auth()->user()->role_id == '2' )^(auth()->user()->role_id == '1' ))
-                 <div class="card-header bg-primary">
-                     <div class="m-3">
-                         <h2 class="text-center text-white">List of Applicants</h2>
-                     </div>
-                 </div>
-                  <div class="card-body m-3">
-                      <div class="form-group shadow">
-                          <i class="icon-search-2"></i>
-                          <input class="form-control" onkeyup="myFunctionSearch()" id="searchAll" placeholder="Search"
-                                 type="text">
-                      </div>
-{{--                      <button class="btn btn-outline-success icon-print float-end" type="button" value="Create PDF"--}}
-{{--                              id="btPrint" onclick="createPDF()">Generate Report</button>--}}
-                      <div id="tab">
-                          <table class="table table-bordered shadow" style="width:100%" id="myTable">
-                              <thead class="text-center">
-                              <tr>
-                                  <th>Applicant Name</th>
-                                  <th>Job Title</th>
-                                  <th>Company</th>
-                                  <th>Date Applied</th>
-                                  <th>Download Resume</th>
-                                  <th>Status | Remarks</th>
-                                  <th>Description</th>
-                                  <th>Action</th>
-                              </tr>
-                              </thead>
-                              <tbody>
-                              @php
-                                  ////            $applicants = DB::table('applicants')->where('applicants.email_address', 'users.email')->get();
-                                  //       $applicants = DB::table('applicants', 'user_name')->where('user_name', auth()->user()->username)->get();
-                                 $applicants = DB::table('apply')
-                                         ->where('tbl_job_list.company_id', auth()->user()->id)
-                                         ->join('tbl_job_list', 'apply.job_id', 'tbl_job_list.id')
-                                         ->join('applicants', 'apply.applicant_id', 'applicants.applicant_id')
-                                         ->join('companies', 'tbl_job_list.company_id', 'companies.company_id')
-                                         ->select('apply.remarks', 'apply.id', 'applicants.file_attachment',
-                                         'apply.created_at', 'tbl_job_list.title', 'companies.company_name',
-                                       'applicants.first_name', 'applicants.last_name', 'applicants.middle_name', 'apply.description')
-                                       -> orderBy('apply.created_at', 'desc')->simplePaginate(5);
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        @auth()
+            @if(in_array(auth()->user()->role_id, [1, 2]))
+                {{-- Header --}}
+                <div class="p-4 p-md-5 bg-gradient text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div>
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 backdrop-blur-md mb-2 text-xs font-semibold uppercase text-rose-300">
+                                <i class="bi bi-person-lines-fill"></i>
+                                <span>Recruitment Candidate Pipeline</span>
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">Applicant Submissions</h2>
+                            <p class="text-slate-300 text-xs sm:text-sm mb-0">Review candidates, examine resumes, and update recruitment remarks.</p>
+                        </div>
 
-                              @endphp
-                              @foreach($applicants as $applicant)
-                                  <tr>
-                                      <td>{{ $applicant->first_name}} {{ $applicant->middle_name}} {{ $applicant->last_name}}</td>
-                                      <td>{{ $applicant->title }}</td>
-                                      <td>{{ $applicant->company_name }}</td>
-                                      <td>{{ $applicant->created_at }}</td>
-                                      <td>
-                                          @if($applicant->file_attachment != null)
-                                            <a href="<?php echo asset("storage/uploads/$applicant->file_attachment")?>" target="_blank">
-                                                <i class="icon-download">Resume</i>
-                                                {{--                                       {{ $applicant->file_attachment }}--}}
-                                            </a>
-                                          @else
-                                            N/A
-                                          @endif
-                                      </td>
-                                      <td> {{ $applicant->remarks }}</td>
-                                      <td> {{ $applicant->description }}</td>
-                                      <td>
-                                          <div class="btn-group">
-                                              {{--                                       <a href="{{ url('edit', $applicant->id)}}"><i title="Edit" class="icon-edit-1 btn btn-outline-primary btn-sm"--}}
-                                              {{--                                           ></i></a>--}}
-{{--                                              <a href="{{ route('employer_remarks.show', $applicant->id)}}" class="icon-eye btn btn-outline-primary shadow "></a>--}}
-                                              <a href="{{ route('employer_remarks.edit', $applicant->id)}}" class="icon-edit-1 btn btn-outline-primary shadow "></a>
-                                              {{--                                       <a href="{{ route('employer_remarks.destroy', $applicant->id)}}"><i title="Delete" class="icon-trash-7 btn btn-outline-danger shadow btn-sm"--}}
-                                              {{--                                           ></i></a>--}}
-                                              <a href="#myModal" data-toggle="modal"
-                                                 class="btn btn-outline-danger icon-trash-7 shadow"></a>
-                                          </div>
+                        {{-- Search Input --}}
+                        <div class="relative w-full sm:w-72">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
+                                <i class="bi bi-search text-xs"></i>
+                            </span>
+                            <input type="text" id="searchAll" onkeyup="myFunctionSearch()" placeholder="Search candidates, jobs..." class="w-full pl-9 pr-4 py-2 rounded-pill text-xs bg-white text-slate-900 placeholder-slate-400 shadow-sm outline-none border-0">
+                        </div>
+                    </div>
+                </div>
 
-                                          <div id="myModal" class="modal fade">
-                                              <div class="modal-dialog modal-confirm">
-                                                  <div class="modal-content">
-                                                      <div class="modal-header flex-column">
-                                                          <div class="icons-box">
-                                                              <i class=" icon-cancel-1"></i>
-                                                          </div>
-                                                          <h4 class="modal-title w-100">Are you sure?</h4>
-                                                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                      </div>
-                                                      <div class="modal-body">
-                                                          <p>Do you really want to delete these records? This process cannot be undone.</p>
-                                                      </div>
-                                                      <div class="modal-footer justify-content-center">
-                                                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                          <form action="{{ route('employer_remarks.destroy', $applicant->id) }}" method="POST">
-                                                              @csrf
-                                                              @method('DELETE')
-                                                              <button type="submit" class="btn btn-danger">Delete</button>
-                                                          </form>
-                                                      </div>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                      </td>
-                                  </tr>
-                              @endforeach
-                              </tbody>
-                          </table>
+                @php
+                    $applicants = DB::table('apply')
+                        ->when(auth()->user()->role_id != 1, function($q) {
+                            return $q->where('tbl_job_list.company_id', auth()->user()->id);
+                        })
+                        ->join('tbl_job_list', 'apply.job_id', 'tbl_job_list.id')
+                        ->join('applicants', 'apply.applicant_id', 'applicants.applicant_id')
+                        ->join('companies', 'tbl_job_list.company_id', 'companies.company_id')
+                        ->select(
+                            'apply.remarks',
+                            'apply.id',
+                            'applicants.file_attachment',
+                            'apply.created_at',
+                            'tbl_job_list.title',
+                            'companies.company_name',
+                            'applicants.first_name',
+                            'applicants.last_name',
+                            'applicants.middle_name',
+                            'apply.description'
+                        )
+                        ->orderBy('apply.created_at', 'desc')
+                        ->simplePaginate(10);
+                @endphp
 
-                      </div>
-                      <span class="float-end shadow">{!! $applicants->links() !!}</span>
-                  </div>
-              @endif
-          @endauth
-      </div>
-   </div>
+                {{-- Table --}}
+                <div class="p-4 p-md-5">
+                    <div class="table-responsive rounded-2xl border border-slate-200 overflow-hidden mb-4">
+                        <table class="table align-middle mb-0 text-sm" id="myTable">
+                            <thead class="bg-slate-50 text-slate-700 text-xs uppercase font-bold tracking-wider">
+                                <tr>
+                                    <th class="py-3 px-4">Candidate Name</th>
+                                    <th class="py-3 px-4">Position Title</th>
+                                    <th class="py-3 px-4">Company</th>
+                                    <th class="py-3 px-4">Applied Date</th>
+                                    <th class="py-3 px-4">Resume</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4">Employer Notes</th>
+                                    <th class="py-3 px-4 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 bg-white">
+                                @forelse($applicants as $applicant)
+                                    <tr class="hover:bg-slate-50/80 transition-colors">
+                                        <td class="py-3.5 px-4">
+                                            <div class="font-bold text-slate-900 text-sm">
+                                                {{ trim("{$applicant->first_name} {$applicant->middle_name} {$applicant->last_name}") ?: 'Candidate' }}
+                                            </div>
+                                        </td>
+                                        <td class="py-3.5 px-4 font-medium text-slate-800">{{ $applicant->title }}</td>
+                                        <td class="py-3.5 px-4 text-slate-600 text-xs">{{ $applicant->company_name }}</td>
+                                        <td class="py-3.5 px-4 text-slate-500 text-xs">
+                                            {{ $applicant->created_at ? \Carbon\Carbon::parse($applicant->created_at)->format('M d, Y') : 'N/A' }}
+                                        </td>
+                                        <td class="py-3.5 px-4">
+                                            @if($applicant->file_attachment)
+                                                <a href="{{ asset('storage/uploads/'.$applicant->file_attachment) }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold text-decoration-none transition-colors">
+                                                    <i class="bi bi-file-earmark-pdf-fill text-rose-500"></i>
+                                                    <span>Resume</span>
+                                                </a>
+                                            @else
+                                                <span class="text-xs text-slate-400">N/A</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3.5 px-4">
+                                            @php $rem = trim($applicant->remarks ?? 'Pending'); @endphp
+                                            @if(strcasecmp($rem, 'Hired') === 0)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">Hired</span>
+                                            @elseif(strcasecmp($rem, 'For Interview') === 0)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 text-xs font-semibold">For Interview</span>
+                                            @elseif(strcasecmp($rem, 'Reject') === 0 || strcasecmp($rem, 'Rejected') === 0)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-xs font-semibold">Declined</span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold">Pending</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3.5 px-4 text-slate-500 text-xs max-w-xs">{{ $applicant->description ?: '—' }}</td>
+                                        <td class="py-3.5 px-4 text-center">
+                                            <div class="btn-group shadow-xs">
+                                                <a href="{{ route('employer_remarks.edit', $applicant->id) }}" class="btn btn-sm btn-outline-primary" title="Update Remarks">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDeleteApplicant{{ $applicant->id }}" title="Delete Application">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
 
-    <script src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{asset('assets/js/search.js')}}"></script>
-@endsection
+                                            {{-- Delete Confirmation Modal --}}
+                                            <div id="modalDeleteApplicant{{ $applicant->id }}" class="modal fade" tabindex="-1">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content rounded-4 border-0 p-3 shadow-lg">
+                                                        <div class="modal-header border-0 pb-0">
+                                                            <h5 class="modal-title fw-bold text-dark">Delete Application</h5>
+                                                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-slate-600 text-sm py-3 text-start">
+                                                            Are you sure you want to remove this applicant record? This action cannot be undone.
+                                                        </div>
+                                                        <div class="modal-footer border-0 pt-0 d-flex justify-content-end gap-2">
+                                                            <button type="button" class="btn btn-light rounded-pill px-3.5 text-xs font-semibold" data-bs-dismiss="modal">Cancel</button>
+                                                            <form action="{{ route('employer_remarks.destroy', $applicant->id) }}" method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger rounded-pill px-4 text-xs font-semibold">Delete</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="py-8 text-center text-slate-400">
+                                            <i class="bi bi-folder-x fs-1 d-block mb-2 opacity-50"></i>
+                                            <p class="mb-0 font-semibold text-slate-600">No applicant records found.</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        {!! $applicants->links() !!}
+                    </div>
+                </div>
+            @endif
+        @endauth
+    </div>
+
+</div>
+
+@push('scripts')
 <script>
-    function createPDF() {
-        var sTable = document.getElementById('tab').innerHTML;
+    function myFunctionSearch() {
+        var input = document.getElementById("searchAll");
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById("myTable");
+        var tr = table.getElementsByTagName("tr");
 
-        var style = "<style>";
-        style = style + "table {width: 100%;font: 17px Calibri;}";
-        style = style + "table, th, td {border: solid 1px #DDD; border-collapse: collapse;";
-        style = style + "padding: 2px 3px;text-align: center;}";
-        style = style + "</style>";
-
-        // CREATE A WINDOW OBJECT.
-        var win = window.open('', '', 'height=700,width=700');
-
-        win.document.write('<html><head>');
-        win.document.write('<title>Profile</title>');   // <title> FOR PDF HEADER.
-        win.document.write(style);          // ADD STYLE INSIDE THE HEAD TAG.
-        win.document.write('</head>');
-        win.document.write('<body>');
-        win.document.write(sTable);         // THE TABLE CONTENTS INSIDE THE BODY TAG.
-        win.document.write('</body></html>');
-
-        win.document.close(); 	// CLOSE THE CURRENT WINDOW.
-
-        win.print();    // PRINT THE CONTENTS.
+        for (var i = 1; i < tr.length; i++) {
+            var rowText = tr[i].textContent || tr[i].innerText;
+            if (rowText.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
     }
 </script>
+@endpush
+@endsection
+
 

@@ -24,7 +24,7 @@ class ApplyController extends Controller
         //        $data = Apply::latest()->paginate(5);
 
         return view('applications.index', compact('data'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+            ->with('i', (request()->input('page', 1) - 1) * 10);
     }
 
     public function create()
@@ -48,32 +48,28 @@ class ApplyController extends Controller
 
     public function applyJob(Request $request)
     {
-        date_default_timezone_set('Asia/Manila');
         $request->validate([
             'job_id' => 'required',
         ]);
 
-        $request->this->applicant_id = auth()->user()->id;
+        $applicantId = auth()->id();
 
-        $validate = Apply::where('job_id', $request->job_id)
-            ->where('applicant_id', $request->applicant_id)
-            ->get();
+        $existing = Apply::where('job_id', $request->job_id)
+            ->where('applicant_id', $applicantId)
+            ->first();
 
-        if (count($validate) > 0) {
+        if ($existing) {
             return response()->json(['result' => 2]);
-        } else {
-            Apply::insert([
-                'job_id' => $request->job_id,
-                'applicant_id' => auth()->user()->id,
-                'remarks' => $request->remarks,
-                'description' => '',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
-
-            return response()->json(['result' => 1]);
         }
 
+        Apply::create([
+            'job_id' => $request->job_id,
+            'applicant_id' => $applicantId,
+            'remarks' => $request->remarks ?? 'Pending',
+            'description' => '',
+        ]);
+
+        return response()->json(['result' => 1]);
     }
 
     public function show(Apply $apply)
@@ -107,7 +103,7 @@ class ApplyController extends Controller
             ->with('success', 'Deleted successfully');
     }
 
-    public function get(Request $id)
+    public function get($id)
     {
         $vacancy = DB::table('tbl_job_list')->find($id);
         //        $get = $id;

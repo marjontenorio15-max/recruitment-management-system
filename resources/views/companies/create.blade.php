@@ -1,168 +1,101 @@
 @extends('layouts.app-master')
+
+@push('styles')
+<script src="https://cdn.tailwindcss.com"></script>
+@endpush
+
 @section('content')
-    <link href="{{asset('assets/https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css')}}" rel="stylesheet">
+<div class="container-xl px-3 px-md-4 py-4 max-w-4xl mx-auto">
 
-   <div class="container">
-       <div class="card mt-3 shadow">
-           <div class="card-header bg-primary">
-               <h2 class="text-center text-white">Employer</h2>
-           </div>
-           <div class="card-body">
-               @if(auth()->check())
-                   <a class="btn btn-outline-dark icon-back shadow m-3 " href="{{ route('company.index') }}"> Back</a>
-               @endif
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
 
-                @if ($errors->any())
-                   <div class="alert alert-danger">
-                       <strong>Whoops!</strong> There were some problems with your input.<br><br>
-                       <ul>
-                           @foreach ($errors->all() as $error)
-                               <li>{{ $error }}</li>
-                           @endforeach
-                       </ul>
-                   </div>
-               @endif
+        {{-- Header --}}
+        <div class="p-4 p-md-5 bg-gradient text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 backdrop-blur-md mb-2 text-xs font-semibold uppercase text-rose-300">
+                        <i class="bi bi-building-add"></i>
+                        <span>Company Registration</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">Add New Company</h2>
+                    <p class="text-slate-300 text-xs sm:text-sm mb-0">Create an employer account and register company credentials.</p>
+                </div>
+                <a class="btn btn-light rounded-pill px-4 py-2 font-semibold text-xs shadow-sm d-inline-flex align-items-center gap-2 self-start sm:self-auto" href="{{ route('company.index') }}">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Back to Directory</span>
+                </a>
+            </div>
+        </div>
 
-               <form class="form-floating" action="{{ route('company.store') }}" method="POST">
-                   @csrf
-                   <div class="row">
-                       <div class="form-group form-floating">
-                           <input type="email" class="form-control" id="floatingEmail" name="email" value="{{ old('email') }}" placeholder="name@example.com" required="required" autofocus>
-                           <label for="floatingEmail">Email address</label>
-                           @if ($errors->has('email'))
-                               <span class="text-danger text-left">{{ $errors->first('email') }}</span>
-                           @endif
-                       </div>
+        {{-- Validation Errors --}}
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show rounded-0 border-0 m-0 p-4 bg-rose-50 text-rose-800" role="alert">
+                <div class="font-bold text-sm mb-1 d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-octagon-fill text-rose-600"></i>
+                    <span>Please correct the errors below:</span>
+                </div>
+                <ul class="mb-0 text-xs list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
-                       <div class="form-group form-floating mb-3">
-                           <input type="text" class="form-control" id="floatingName" name="username" value="{{ old('username') }}" placeholder="Username" required="required" autofocus>
-                           <label for="floatingName">Username</label>
-                           @if ($errors->has('username'))
-                               <span class="text-danger text-left">{{ $errors->first('username') }}</span>
-                           @endif
-                       </div>
+        {{-- Form Body --}}
+        <div class="p-4 p-md-5">
+            <form action="{{ route('company.store') }}" method="POST" class="space-y-4">
+                @csrf
 
-                       <div class="form-group form-floating mb-3">
-                           <input type="password" class="form-control" id="floatingPassword" name="password" value="{{ old('password') }}" placeholder="Password" required="required">
-                           <label for="floatingPassword">Password</label>
-                           @if ($errors->has('password'))
-                               <span class="text-danger text-left">{{ $errors->first('password') }}</span>
-                           @endif
-                       </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Company Name <span class="text-rose-500">*</span></label>
+                        <input type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="company_name" value="{{ old('company_name') }}" placeholder="e.g. Acme Corporation" required>
+                    </div>
 
-                       <div class="form-group form-floating mb-3">
-                           <input type="password" class="form-control" id="floatingConfirmPassword" name="password_confirmation" value="{{ old('password_confirmation') }}" placeholder="Confirm Password" required="required">
-                           <label for="floatingConfirmPassword">Confirm Password</label>
-                           @if ($errors->has('password_confirmation'))
-                               <span class="text-danger text-left">{{ $errors->first('password_confirmation') }}</span>
-                           @endif
-                       </div>
-                       <div class="form-group form-floating mb-3">
-                           <input type="text" class="form-control" id="floatingCompanyName" name="company_name" placeholder="Companny name" required="required">
-                           <label for="floatingCompanyName">Company Name</label>
-{{--                           @if ($errors->has('company_name'))--}}
-{{--                               <span class="text-danger text-left">{{ $errors->first('company_name') }}</span>--}}
-{{--                           @endif--}}
-                       </div>
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Contact Number <span class="text-rose-500">*</span></label>
+                        <input type="number" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="contact_no" value="{{ old('contact_no') }}" placeholder="e.g. 09123456789" required>
+                    </div>
 
-                       <div class="form-group form-floating mb-3">
-                           <input type="text" name="address" id="floatingAddress" class="form-control"  placeholder="Enter Address" required="required">
-                           <label for="floatingAddress">Address</label>
-{{--                           @if ($errors->has('address'))--}}
-{{--                               <span class="text-danger text-left">{{ $errors->first('address') }}</span>--}}
-{{--                           @endif--}}
-                       </div>
-                       <div class="form-group form-floating mb-3">
-                           <input type="number" name="contact_no" id="floatingContactNumber" class="form-control"  placeholder="Enter Contact Number" required="required">
-                           <label for="floatingContactNumber">Contact Number</label>
-{{--                           @if ($errors->has('contact_no'))--}}
-{{--                               <span class="text-danger text-left">{{ $errors->first('contact_no') }}</span>--}}
-{{--                           @endif--}}
-                       </div>
-                       <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                           <button type="submit" class="btn btn-outline-success shadow icon-paper-plane float-right"> Submit</button>
-                       </div>
-                   </div>
+                    <div class="col-12">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Corporate Office Address <span class="text-rose-500">*</span></label>
+                        <input type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="address" value="{{ old('address') }}" placeholder="Street, City, Province" required>
+                    </div>
 
-               </form>
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email Address <span class="text-rose-500">*</span></label>
+                        <input type="email" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="email" value="{{ old('email') }}" placeholder="company@example.com" required>
+                    </div>
 
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Login Username <span class="text-rose-500">*</span></label>
+                        <input type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="username" value="{{ old('username') }}" placeholder="username" required>
+                    </div>
 
-{{--               <div class="container-fluid">--}}
-{{--                   <div class="table-responsive">--}}
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Password <span class="text-rose-500">*</span></label>
+                        <input type="password" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="password" placeholder="••••••••" required>
+                    </div>
 
-{{--                       <div class="row m-3 p-3">--}}
-{{--                           <div class="col-8"></div>--}}
-{{--                           <div class="col-4">--}}
-{{--                               <input class="form-control" id="myInput" onkeyup="employeeFunction()" placeholder="Search for names.." type="text">--}}
-{{--                           </div>--}}
-{{--                       </div>--}}
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Confirm Password <span class="text-rose-500">*</span></label>
+                        <input type="password" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none" name="password_confirmation" placeholder="••••••••" required>
+                    </div>
+                </div>
 
-{{--                       <table class="table" id="myTable">--}}
-{{--                           <thead>--}}
-{{--                           <tr>--}}
-{{--                               <th scope="col">Employee #</th>--}}
-{{--                               <th scope="col">Email Address</th>--}}
-{{--                               <th scope="col">Username</th>--}}
-{{--                               <th scope="col">Company Name</th>--}}
-{{--                               <th scope="col">Action</th>--}}
-{{--                           </tr>--}}
-{{--                           </thead>--}}
-{{--                           <tbody>--}}
+                <div class="pt-4 border-t border-slate-100 d-flex justify-content-end gap-3">
+                    <a href="{{ route('company.index') }}" class="btn btn-light rounded-pill px-4 text-xs font-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 text-xs font-semibold shadow-sm">
+                        <i class="bi bi-check2 me-1"></i> Save Company
+                    </button>
+                </div>
+            </form>
+        </div>
 
-{{--                           @php--}}
+    </div>
 
-{{--                               $users = DB::table('users')->select('users.id', 'users.email', 'users.username', 'companies.company_name')->join('companies', 'companies.company_id', 'users.id')->get();--}}
-
-{{--                           @endphp--}}
-
-{{--                           @foreach($users as $key => $data)--}}
-{{--                               <tr>--}}
-{{--                                   <td>{{$data->id}}</td>--}}
-{{--                                   <td>{{$data->email}}</td>--}}
-{{--                                   <td>{{$data->username}}</td>--}}
-{{--                                   <td>{{$data->company_name}}</td>--}}
-{{--                                   <td>--}}
-{{--                                       <form action="" method="POST">--}}
-{{--                                           <a href="{{route('show-employer'), $data->id }}" class="btn btn-outline-info shadow icon-eye-7"></a>--}}
-{{--                                           <a class="btn btn-outline-primary shadow icon-edit"></a>--}}
-{{--                                           <button type="submit" class="btn btn-outline-danger shadow icon-trash"></button>--}}
-{{--                                       </form>--}}
-{{--                                   </td>--}}
-{{--                               </tr>--}}
-{{--                           @endforeach--}}
-
-{{--                           </tbody>--}}
-{{--                       </table>--}}
-{{--                   </div>--}}
-{{--               </div>--}}
-
-
-           </div>
-       </div>
-   </div>
-
-   <script>
-       function employeeFunction() {
-           // Declare variables
-           var input, filter, table, tr, td, i, txtValue;
-           input = document.getElementById("myInput");
-           filter = input.value.toUpperCase();
-           table = document.getElementById("myTable");
-           tr = table.getElementsByTagName("tr");
-
-           // Loop through all table rows, and hide those who don't match the search query
-           for (i = 0; i < tr.length; i++) {
-               td = tr[i].getElementsByTagName("td")[0];
-               if (td) {
-                   txtValue = td.textContent || td.innerText;
-                   if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                       tr[i].style.display = "";
-                   } else {
-                       tr[i].style.display = "none";
-                   }
-               }
-           }
-       }
-   </script>
-    <script src="{{asset('assets/https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js')}}"></script>
+</div>
 @endsection
+

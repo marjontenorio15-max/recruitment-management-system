@@ -4,47 +4,77 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Apply;
+use App\Models\Company;
 use App\Models\User;
+use App\Models\Vacancy;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ChartJSController extends Controller
 {
     public function index()
     {
-        //        $users = DB::table('users')->select("id as counts",
-        //           "created_at as month_name")
-        //            ->whereYear('created_at', date('Y'))
-        //            ->groupBy('created_at')
-        //            ->get('count', 'month_name');
-        $users = DB::table('users')
-            ->select(DB::raw('COUNT(*) as count'), DB::raw('DAY(created_at) as month_name'))
-            ->whereYear('created_at', date('Y'))
-            ->groupBy(DB::raw('DAY(created_at)'))
-            ->pluck('count', 'month_name');
+        $currentYear = Carbon::now()->year;
 
-        $labels = $users->keys();
-        $data = $users->values();
+        // Key Metric Totals
+        $totalJobs = Vacancy::count();
+        $totalApplies = Apply::count();
+        $totalUsers = User::count();
+        $totalCompanies = Company::count();
+        $applicantsCount = User::where('role_id', 3)->count();
+        $employersCount = User::where('role_id', 2)->count();
 
-        // for apply
-        $visitors = Apply::select('created_at', 'job_id', 'applicant_id')->get();
+        // 12 Months Data Series for Charts
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $monthlyUsers = [];
+        $monthlyApplies = [];
+        $monthlyVacancies = [];
 
-        $result[] = ['Dates', 'job', 'applicant'];
-        foreach ($visitors as $key => $value) {
-            $result[++$key] = [$value->created_at, (int) $value->job_id, (int) $value->applicant_id];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthlyUsers[] = User::whereYear('created_at', $currentYear)->whereMonth('created_at', $m)->count();
+            $monthlyApplies[] = Apply::whereYear('created_at', $currentYear)->whereMonth('created_at', $m)->count();
+            $monthlyVacancies[] = Vacancy::whereYear('created_at', $currentYear)->whereMonth('created_at', $m)->count();
         }
 
-        //        for baruser
-        $year = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
-            'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+        // Recent Applications (Latest 5)
+        $recentApplies = DB::table('apply')
+            ->join('tbl_job_list', 'apply.job_id', '=', 'tbl_job_list.id')
+            ->join('applicants', 'apply.applicant_id', '=', 'applicants.applicant_id')
+            ->leftJoin('companies', 'tbl_job_list.company_id', '=', 'companies.company_id')
+            ->select(
+                'apply.id',
+                'apply.remarks',
+                'apply.created_at',
+                'tbl_job_list.title',
+                'companies.company_name',
+                'applicants.first_name',
+                'applicants.last_name'
+            )
+            ->latest('apply.created_at')
+            ->take(5)
+            ->get();
 
-        $user = [];
-        foreach ($year as $key => $value) {
-            $user[] = User::where(DB::raw("DATE_FORMAT(created_at, '%M')"), $value)->count();
-        }
+        // Recent Vacancies (Latest 5)
+        $recentVacancies = DB::table('tbl_job_list')
+            ->leftJoin('companies', 'tbl_job_list.company_id', '=', 'companies.company_id')
+            ->select('tbl_job_list.*', 'companies.company_name')
+            ->latest('tbl_job_list.created_at')
+            ->take(5)
+            ->get();
 
         return view('admin.dashboard', compact(
-            'labels', 'data', 'result',
-        ))->with('year', json_encode($year, JSON_NUMERIC_CHECK))->with('user', json_encode($user, JSON_NUMERIC_CHECK));
-
+            'totalJobs',
+            'totalApplies',
+            'totalUsers',
+            'totalCompanies',
+            'applicantsCount',
+            'employersCount',
+            'months',
+            'monthlyUsers',
+            'monthlyApplies',
+            'monthlyVacancies',
+            'recentApplies',
+            'recentVacancies'
+        ));
     }
 }

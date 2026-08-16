@@ -12,15 +12,18 @@ class CompanyController extends Controller
 {
     public function index()
     {
-
-        //        $data = Company::latest()->paginate(5);
-        $data = DB::table('companies')->select('companies.company_name', 'companies.address',
+        $query = DB::table('companies')->select('companies.company_name', 'companies.address',
             'companies.contact_no', 'users.email', 'users.username', 'companies.company_id', 'companies.id')
-            ->join('users', 'users.id', 'companies.company_id')->paginate(5);
+            ->join('users', 'users.id', 'companies.company_id');
+
+        if (auth()->user()->role_id == 2) {
+            $query->where('companies.company_id', auth()->id());
+        }
+
+        $data = $query->paginate(10);
 
         return view('companies.index', compact('data'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
-
+            ->with('i', (request()->input('page', 1) - 1) * 10);
     }
 
     public function create()

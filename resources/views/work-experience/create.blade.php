@@ -1,90 +1,80 @@
 @extends('layouts.app-master')
 
+@push('styles')
+<script src="https://cdn.tailwindcss.com"></script>
+@endpush
+
 @section('content')
-   <div class="container">
-       <div class="card m-3 shadow">
-           <div class="card-header bg-primary">
-               <h2 class="text-white text-center">Add New Work Experience</h2>
-           </div>
-           <div class="card-body m-3">
-               <div class="row">
-                   <div class="col-lg-12 margin-tb">
-                       <div class="pull-right">
-                           <a class="btn btn-dark icon-back shadow m-3" href="{{ route('job-experience.index') }}"> Back</a>
-                       </div>
-                   </div>
-               </div>
+<div class="container-xl px-3 px-md-4 py-4 max-w-3xl mx-auto">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
 
-               @if ($errors->any())
-                   <div class="alert alert-danger">
-                       <strong>Whoops!</strong> There were some problems with your input.<br><br>
-                       <ul>
-                           @foreach ($errors->all() as $error)
-                               <li>{{ $error }}</li>
-                           @endforeach
-                       </ul>
-                   </div>
-               @endif
+        {{-- Header --}}
+        <div class="p-4 p-md-5 bg-gradient text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 backdrop-blur-md mb-2 text-xs font-semibold uppercase text-rose-300">
+                        <i class="bi bi-briefcase-fill"></i>
+                        <span>Career Record</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">Add Work Experience</h2>
+                    <p class="text-slate-300 text-xs sm:text-sm mb-0">Record your employment history, role, and achievements.</p>
+                </div>
+                <a class="btn btn-light rounded-pill px-4 py-2 font-semibold text-xs shadow-sm d-inline-flex align-items-center gap-2 self-start sm:self-auto" href="{{ route('job-experience.index') }}">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Back</span>
+                </a>
+            </div>
+        </div>
 
-               <form action="{{ route('job-experience.store') }}" method="POST">
-                   @csrf
+        {{-- Form Body --}}
+        <div class="p-4 p-md-5">
+            <form action="{{ route('job-experience.store') }}" method="POST" class="space-y-4">
+                @csrf
+                <input type="hidden" name="applicant_id" value="{{ auth()->id() }}">
 
-                   <div class="row">
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               <input type="hidden" name="applicant_id" class="form-control" value="{{auth()->user()->id}}">
-                           </div>
-                       </div>
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               <label for="job_title">Job Title:</label>
-                               <input type="text" name="job_title" id="job_title" class="form-control" placeholder="Enter Job Title">
-                           </div>
-                       </div>
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               <label for="company_name">Company Name:</label>
-                               <input type="text" name="company_name" id="company_name" class="form-control" placeholder="Enter Company Name">
-                           </div>
-                       </div>
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               <label for="achievements">Achievements:</label>
-                               <textarea class="form-control" style="height:150px" id="achievements" name="achievements" placeholder="Enter Achievements"></textarea>
-                           </div>
-                       </div>
-{{--                       <div class="col-xs-12 col-sm-12 col-md-12">--}}
-{{--                           <div class="form-group">--}}
-{{--                               <label for="period_employed">Period Employed:</label>--}}
-{{--                               <input type="date" name="period_employed" id="period_employed" class="form-control" placeholder="Enter Period Employed">--}}
-{{--                           </div>--}}
-{{--                       </div>--}}
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               {{--                                    <input type="text" name="work_exp" class="form-control" placeholder="Qualification/Work Experience ">--}}
-                               <label for="period_employed">Work Experience:</label>
-                               <select class="form-control" name="period_employed" id="period_employed">
-                                   <option value="1 year">1 year</option>
-                                   <option value="2 years">2 years</option>
-                                   <option value="3 years">3 years</option>
-                                   <option value="4 years">4 year</option>
-                                   <option value="5 years">5 years</option>
-                                   <option value="6 years">6 years</option>
-                                   <option value="7 years">7 years</option>
-                                   <option value="8 years">8 years</option>
-                                   <option value="9 years">9 years</option>
-                                   <option value="10 years">10 years</option>
-                                   <option value="10+ years">10+ years</option>
-                               </select>
-                           </div>
-                       </div>
-                       <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                           <button type="submit" class="btn btn-success icon-paper-plane shadow">Submit</button>
-                       </div>
-                   </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Job Title / Role <span class="text-rose-500">*</span></label>
+                        <input type="text" name="job_title" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 outline-none" placeholder="e.g. Frontend Developer" required>
+                    </div>
 
-               </form>
-           </div>
-       </div>
-   </div>
+                    <div class="col-md-6">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Company / Organization <span class="text-rose-500">*</span></label>
+                        <input type="text" name="company_name" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 outline-none" placeholder="e.g. Acme Tech Corp" required>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Work Experience / Duration <span class="text-rose-500">*</span></label>
+                        <select name="period_employed" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 outline-none" required>
+                            <option value="Less than 1 year">Less than 1 year</option>
+                            <option value="1 year">1 year</option>
+                            <option value="2 years">2 years</option>
+                            <option value="3 years">3 years</option>
+                            <option value="4 years">4 years</option>
+                            <option value="5 years">5 years</option>
+                            <option value="6 years">6 years</option>
+                            <option value="7 years">7 years</option>
+                            <option value="8 years">8 years</option>
+                            <option value="9 years">9 years</option>
+                            <option value="10+ years">10+ years</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Responsibilities & Key Achievements</label>
+                        <textarea name="achievements" rows="5" class="w-full p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:border-slate-900 outline-none" placeholder="Describe your key responsibilities, leadership experience, and accomplishments..."></textarea>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 d-flex justify-content-end gap-3">
+                    <a href="{{ route('job-experience.index') }}" class="btn btn-light rounded-pill px-4 text-xs font-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 text-xs font-semibold shadow-sm">
+                        <i class="bi bi-save me-1"></i> Save Experience
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
 @endsection

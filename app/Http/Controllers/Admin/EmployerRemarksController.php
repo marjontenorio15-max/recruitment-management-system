@@ -68,7 +68,9 @@ class EmployerRemarksController extends Controller
         $employer_remark->update($request->all());
 
         $applicants = DB::table('apply')
-            ->where('tbl_job_list.company_id', auth()->user()->id)
+            ->when(auth()->user()->role_id != 1, function ($q) {
+                return $q->where('tbl_job_list.company_id', auth()->user()->id);
+            })
             ->where('apply.id', $employer_remark->id)
             ->join('tbl_job_list', 'apply.job_id', 'tbl_job_list.id')
             ->join('applicants', 'apply.applicant_id', 'applicants.applicant_id')
@@ -79,21 +81,22 @@ class EmployerRemarksController extends Controller
                 'applicants.first_name', 'applicants.last_name', 'applicants.middle_name', 'apply.description', 'users.email')
             ->orderBy('apply.created_at', 'desc')->first();
 
-        // return $applicants;
-        // die;
-
         if ($applicants != null) {
             $subject = 'Application Status Update';
             $to_email = $applicants->email;
-            // $to_email = 'testrms101@yopmail.com';
             $to_name = $applicants->first_name.' '.$applicants->last_name;
             $data['to_name'] = $to_name;
             $data['applicants'] = $applicants;
-            Mail::send('mail.job_update', $data, function ($message) use ($to_name, $to_email, $subject) {
-                $message->to($to_email, $to_name)
-                    ->subject($subject);
-                $message->from('aei.rms.system@gmail.com', 'AEI - RMS');
-            });
+
+            try {
+                Mail::send('mail.job_update', $data, function ($message) use ($to_name, $to_email, $subject) {
+                    $message->to($to_email, $to_name)
+                        ->subject($subject);
+                    $message->from('aei.rms.system@gmail.com', 'AEI - RMS');
+                });
+            } catch (\Throwable $e) {
+                // Ignore mail transport failure during local dev
+            }
         }
 
         if (auth()->user()->role_id == 2) {

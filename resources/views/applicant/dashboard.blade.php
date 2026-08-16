@@ -1,100 +1,116 @@
-@php use App\Models\Vacancy; @endphp
+@php use App\Models\Vacancy; use Illuminate\Support\Facades\DB; @endphp
 @extends('layouts.app-master')
+
+@push('styles')
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    .applied-card-interactive {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s ease;
+    }
+</style>
+@endpush
+
 @section('content')
-  <div class="container-fluid">
-      <div class="card m-3 bg-light">
+<div class="container-xl px-3 px-md-4 py-4 max-w-7xl mx-auto">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white">
+        @include('applicant.partials.profile')
 
-          @include('applicant.partials.profile')
+        <div class="p-4 p-md-5 bg-slate-50 border-top border-slate-100">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    @include('applicant.partials.image-profile')
+                </div>
+                <div class="col-lg-9">
+                    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-6">
+                        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 pb-4 mb-4 border-b border-slate-100">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                                    <h3 class="text-xl font-bold text-slate-900 tracking-tight mb-0">Applied Jobs History</h3>
+                                </div>
+                                <p class="text-slate-500 text-xs sm:text-sm mb-0 mt-0.5">Track your submitted job applications and employer status updates.</p>
+                            </div>
 
-          <div class="card-body">
-              <div class="row bg-light">
-                  <div class="col-3">
-                      @include('applicant.partials.image-profile')
-                  </div>
-                  <div class="col-9">
-                      <div class="card shadow">
-                          <div class="card-header bg-info">
-                              <h3 class="text-center text-white">Applied Jobs</h3>
-                          </div>
-                          <div class="card-body">
-                              <div class="container">
-                                  <div class="row">
-                                      <div class="col-4"></div>
-                                      <div class="col-4">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <select id="myInput" onchange="myFunction()" class="text-xs py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-900 outline-none">
+                                    <option value="" selected="selected">All Statuses</option>
+                                    <option>Pending</option>
+                                    <option>Hired</option>
+                                    <option>For Interview</option>
+                                    <option>Reject</option>
+                                </select>
 
-                                          <form action="" method="get">
-                                              <label for="myInput">Status</label>
-                                              <select id="myInput" onchange="myFunction()" class='form-control'>
-                                                  <option value="" selected="selected">All</option>
-                                                  <option>Pending</option>
-                                                  <option>Hired</option>
-                                                  <option>For Interview</option>
-                                                  <option>Reject</option>
-                                              </select>
-                                          </form>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 pointer-events-none">
+                                        <i class="bi bi-search text-xs"></i>
+                                    </span>
+                                    <input class="pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-900 outline-none w-44 sm:w-56" onkeyup="myFunction()" id="searchInput" placeholder="Search" type="text">
+                                </div>
+                            </div>
+                        </div>
 
-                                      </div>
-                                      <div class="col-4">
-                                          <div class="form-group shadow">
-                                              <i class="icon-search-2"></i>
-                                              <input class="form-control" onkeyup="myFunction()" id="myInput" placeholder="Search"
-                                                     type="text">
+                        @php
+                            $data = DB::table('apply')
+                                ->where('apply.applicant_id', auth()->user()->id)
+                                ->join('applicants', 'apply.applicant_id', 'applicants.applicant_id')
+                                ->join('tbl_job_list', 'apply.job_id', 'tbl_job_list.id')
+                                ->join('companies', 'tbl_job_list.company_id', 'companies.company_id')
+                                ->select('apply.remarks as remarks','tbl_job_list.title as title', 'companies.company_name',
+                                'tbl_job_list.location', 'apply.description', 'apply.id')
+                                ->orderBy('apply.created_at', 'desc')
+                                ->simplePaginate(10);
+                        @endphp
 
-                                          </div>
-                                      </div>
-                                  </div>
-                                  @php
-
-                                      //                                $data = Vacancy::select('tbl_job_list.id as id','title',
-                                      //                                        'job_details', 'users.username as created_by')->
-                                      //                                        leftJoin('users', 'users.id', '=', 'tbl_job_list.created_by')->
-                                      ////                                        leftJoin('applicants', 'applicants.applicant_id', '=', '')->
-                                      //                                        orderBy('tbl_job_list.created_by')->simplePaginate(5);
-                                        $data = DB::table('apply')
-                                            ->where('apply.applicant_id', auth()->user()->id)
-                                            ->join('applicants', 'apply.applicant_id', 'applicants.applicant_id')
-                                             ->join('tbl_job_list', 'apply.job_id', 'tbl_job_list.id')
-                                            ->join('companies', 'tbl_job_list.company_id', 'companies.company_id')
-                                            ->select('apply.remarks as remarks','tbl_job_list.title as title', 'companies.company_name',
-                                            'tbl_job_list.location', 'apply.description', 'apply.id')
-                                            ->orderBy('apply.created_at', 'desc')
-                                            ->simplePaginate(10);
-                                  @endphp
-
-                                  <table class="table table-bordered shadow" id="myTable">
-                                      <tr class="header">
-                                          <th>Job title</th>
-                                          <th>Company</th>
-                                          <th>Location</th>
-                                          <th>Status</th>
-                                          <th>Description</th>
-{{--                                          <th>Action</th>--}}
-                                      </tr>
-
-                                      @foreach ($data as $applicant)
-                                          <tr>
-                                              <td>{{$applicant->title}}</td>
-                                              <td>{{$applicant->company_name}}</td>
-                                              <td>{{$applicant->location}}</td>
-                                              <td>
-                                                  {{$applicant->remarks}}
-                                              </td>
-                                              <td>
-                                                  {{$applicant->description}}
-                                              </td>
-{{--                                                <td>--}}
-{{--                                                    <a class="btn btn-info icon-eye shadow" href="{{ route('employer_remarks.show', $applicant->id) }}">Show</a>--}}
-{{--                                                </td>--}}
-
-                                          </tr>
-                                      @endforeach
-
-                                  </table>
-                              </div>
-                              <span class="float-end shadow">{!! $data->links() !!}</span>
-                          </div>
-                      </div>
-                  </div>
+                        <div class="table-responsive rounded-2xl border border-slate-200 overflow-hidden mb-4">
+                            <table class="table align-middle mb-0 text-sm" id="myTable">
+                                <thead class="bg-slate-50 text-slate-700 text-xs uppercase font-bold tracking-wider">
+                                    <tr class="header">
+                                        <th class="py-3 px-4">Job Title</th>
+                                        <th class="py-3 px-4">Company</th>
+                                        <th class="py-3 px-4">Location</th>
+                                        <th class="py-3 px-4">Status</th>
+                                        <th class="py-3 px-4">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 bg-white">
+                                    @foreach ($data as $applicant)
+                                        <tr class="hover:bg-slate-50/80 transition-colors">
+                                            <td class="py-3.5 px-4 font-bold text-slate-900">{{$applicant->title}}</td>
+                                            <td class="py-3.5 px-4 font-medium text-slate-700">{{$applicant->company_name}}</td>
+                                            <td class="py-3.5 px-4 text-slate-500"><i class="bi bi-geo-alt me-1 text-slate-400"></i>{{$applicant->location}}</td>
+                                            <td class="py-3.5 px-4">
+                                                @php $rem = trim($applicant->remarks ?? 'Pending'); @endphp
+                                                @if(strcasecmp($rem, 'Hired') === 0)
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
+                                                        <i class="bi bi-check-circle-fill text-xs"></i> Hired
+                                                    </span>
+                                                @elseif(strcasecmp($rem, 'For Interview') === 0)
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200 text-xs font-semibold">
+                                                        <i class="bi bi-calendar-event text-xs"></i> For Interview
+                                                    </span>
+                                                @elseif(strcasecmp($rem, 'Reject') === 0 || strcasecmp($rem, 'Rejected') === 0)
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-xs font-semibold">
+                                                        <i class="bi bi-x-circle text-xs"></i> Unsuccessful
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold">
+                                                        <i class="bi bi-hourglass-split text-xs"></i> Under Review
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3.5 px-4 text-slate-500 text-xs max-w-xs">{{$applicant->description ?: 'No notes provided yet.'}}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <span class="float-end shadow-sm">{!! $data->links() !!}</span>
+                        </div>
+                    </div>
+                </div>
 
               </div>
           </div>
