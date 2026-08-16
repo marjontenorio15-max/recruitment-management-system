@@ -4,13 +4,13 @@
 
     <div class="card m-3 shadow">
 
-        @include('profile')
+        @include('applicant.partials.profile')
 
         <div class="body p-3 m-3">
             <div class="row">
                 <div class="col-3">
 
-                    @include('image-profile')
+                    @include('applicant.partials.image-profile')
 
                 </div>
                 <div class="col-9">
@@ -23,7 +23,7 @@
                         </div>
                         <div class="card-body">
                             <div class="m-3">
-                                @include('image-form')
+                                @include('media.image-form')
                             </div>
                             <br><br>
                             <div class="m-3">
@@ -94,7 +94,7 @@
 {{--                                             'tbl_job_list.location','tbl_job_list.created_at', 'tbl_job_list.degree', 'tbl_job_list.sex',--}}
 {{--                                             'tbl_job_list.status','tbl_job_list.work_exp')--}}
 {{--                                             ->simplePaginate(5);--}}
-                                        @include('view_jobs.vacancy_list')
+                                        @include('jobs.vacancy-list')
                                     </div>
                                     <span class="float-end shadow">{!! $vacancies->links() !!}</span>
                                 @endif
@@ -128,7 +128,7 @@
                         </div>
 
                         <div class="card-footer bg-white">
-                            @include('fragments.educational_background')
+                            @include('fragments.educational-background')
                         </div>
 
                         <div class="card-header bg-info text-white">
@@ -174,3 +174,4 @@
         }
     </script>
 @endsection
+

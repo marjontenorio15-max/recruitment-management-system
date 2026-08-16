@@ -56,7 +56,7 @@
                                 <p class="text-white">Hired Applicant <i class="icon-chart-bar"></i></p>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="{{route('generate-reports')}}" class="text-white">More info<i
+                                <a href="{{route('reports.index')}}" class="text-white">More info<i
                                         class="icon-right-circled"></i></a>
                             </div>
 
@@ -82,7 +82,7 @@
                                 <p class="text-white">For Interview<i class="icon-user-add"></i></p>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="{{route('generate-reports')}}" class="text-white">More info <i
+                                <a href="{{route('reports.index')}}" class="text-white">More info <i
                                         class="icon-right-circled"></i></a>
                             </div>
                         </div>
@@ -142,7 +142,7 @@
                                 <p class="text-white">Pending <i class=" icon-building"></i></p>
                             </div>
                             <div class="card-footer">
-                                <a href="{{route('generate-reports')}}" class="text-white">More info <i
+                                <a href="{{route('reports.index')}}" class="text-white">More info <i
                                         class="icon-right-circled"></i></a>
                             </div>
                         </div>
@@ -157,3 +157,4 @@
     </div>
 
 @endsection
+

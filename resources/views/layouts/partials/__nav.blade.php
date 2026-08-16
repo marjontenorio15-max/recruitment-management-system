@@ -4,7 +4,7 @@
      <nav>
          <ul class="cd-primary-nav">
              <li><a href="{{route('dashboard.index')}}" class="animated-link">Dashboard</a></li>
-             <li><a href="{{route('generate-reports')}}" class="animated_link">Generate Report</a></li>
+             <li><a href="{{route('reports.index')}}" class="animated_link">Generate Report</a></li>
              <li><a href="{{route('company.index')}}" class="animated_link">Manage|Create Company</a></li>
              <li><a href="{{route('vacancy.index')}}" class="animated_link">Vacancy|Create Jobs</a></li>
              <li><a href="{{route('users.index')}}" class="animated_link">Manage Users</a></li>
@@ -19,7 +19,7 @@
      <nav>
          <ul class="cd-primary-nav">
              <li><a href="{{route('home.index')}}" class="animated_link">Home</a></li>
-             <li><a href="{{route('generate-reports')}}" class="animated_link">Generate Report</a></li>
+             <li><a href="{{route('reports.index')}}" class="animated_link">Generate Report</a></li>
              <li><a href="{{route('vacancy.index')}}" class="animated_link">Create Job|Vacancy</a></li>
              <li><a href="{{route('employer-applicant-table-record')}}" class="animated_link">Manage Applicants</a></li>
              <li><a href="{{route('account-profile')}}" class="animated_link">Employer Profile</a></li>
@@ -52,4 +52,5 @@
         </ul>
     </nav>
 @endguest
+
 

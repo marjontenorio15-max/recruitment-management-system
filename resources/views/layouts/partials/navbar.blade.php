@@ -18,7 +18,7 @@
 {{--       admin--}}
  @if(auth()->user()->role_id == 1)
              <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('dashboard.index')}}" class="animated-link">Dashboard</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('generate-reports')}}" class="animated_link">Generate Report</a></li>
+             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('reports.index')}}" class="animated_link">Generate Report</a></li>
              <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('company.index')}}" class="animated_link">Manage|Create Company</a></li>
              <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('vacancy.index')}}" class="animated_link">Vacancy|Create Jobs</a></li>
              <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('users.index')}}" class="animated_link">Manage Users</a></li>
@@ -29,7 +29,7 @@
 {{--         employer--}}
  @elseif(auth()->user()->role_id == 2)
              <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('home.index')}}" class="animated_link">Home</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('generate-reports')}}" class="animated_link">Generate Report</a></li>
+             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('reports.index')}}" class="animated_link">Generate Report</a></li>
              <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('vacancy.index')}}" class="animated_link">Create Job|Vacancy</a></li>
              <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('employer-applicant-table-record')}}" class="animated_link">Manage Applicants</a></li>
              <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('account-profile')}}" class="animated_link">Employer Profile</a></li>
@@ -87,3 +87,4 @@
     <!-- /container -->
 </header>
 <!-- /Header -->
+

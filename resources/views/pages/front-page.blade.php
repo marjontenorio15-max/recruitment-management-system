@@ -23,7 +23,7 @@
             <div class="container margin_60_35">
                 {{--                    @include('view_jobs.view-jobs')--}}
                 @auth
-                    @if(auth()->user()->role_id = 3)
+                    @if(auth()->user()->role_id == 3)
                         <div class="container">
 
                             <div class="text-center">
@@ -116,7 +116,7 @@
 
                 <div class="row">
                     <div class="col-lg-12">
-                        @include('view_jobs.view-jobs-front')
+                        @include('jobs.public-list')
                         <!-- <h2 class="nomargin_top">A Quick Guide to a Successful Recruitment Process</h2>
                         <p class="lead">What Is the HR Recruitment Process?</p>
                         <p style="text-indent: 50px; letter-spacing: 2px; text-align: justify;">The recruitment process is the steps involved in attracting and

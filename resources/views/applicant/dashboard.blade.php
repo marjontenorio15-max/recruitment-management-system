@@ -4,12 +4,12 @@
   <div class="container-fluid">
       <div class="card m-3 bg-light">
 
-          @include('profile')
+          @include('applicant.partials.profile')
 
           <div class="card-body">
               <div class="row bg-light">
                   <div class="col-3">
-                      @include('image-profile')
+                      @include('applicant.partials.image-profile')
                   </div>
                   <div class="col-9">
                       <div class="card shadow">
