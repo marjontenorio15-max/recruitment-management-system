@@ -1,119 +1,59 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>RMS | Recruitment Management System</title>
+    <title>@yield('title', 'RMS | Recruitment Management System')</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="{{asset('assets/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-    <!-- Favicons-->
-    <link rel="shortcut icon" href="{{asset('assets/img/Rms.png')}}" type="image/x-icon">
-    <link rel="apple-touch-icon" type="image/x-icon" href="{{asset('assets/img/apple-touch-icon-57x57-precomposed.png')}}">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{{asset('assets/img/apple-touch-icon-72x72-precomposed.png')}}">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{{asset('assets/img/apple-touch-icon-114x114-precomposed.png')}}">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{{asset('assets/img/apple-touch-icon-144x144-precomposed.png')}}">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ asset('assets/img/Rms.png') }}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/Rms.png') }}">
 
-    <!-- GOOGLE WEB FONT -->
-    <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,500,600" rel="stylesheet">
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- BASE CSS -->
-    <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet">
-    <link href="{{asset('assets/css/menu.css')}}" rel="stylesheet">
-    <link href="{{asset('assets/css/style.css')}}" rel="stylesheet">
-    <link href="{{asset('assets/css/vendors.css')}}" rel="stylesheet">
+    <!-- CSS Assets -->
+    <link href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet">
 
-    <!-- YOUR CUSTOM CSS -->
-    <link href="{{asset('assets/css/custom.css')}}" rel="stylesheet">
-
-    <!-- MODERNIZR MENU -->
-    <script src="{{asset('assets/js/modernizr.js')}}"></script>
-
-
-
-        <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
-        }
-
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-        {{--body{--}}
-        {{--    background-repeat: no-repeat;--}}
-        {{--    background-size: 1350px 1320px;--}}
-        {{--    background-image:url({{asset('assets/img/background1.png')}});--}}
-
-        {{--}--}}
-    </style>
-
-
-    <!-- Custom styles for this template -->
-    <link href="{{asset('assets/css/app.css')}}" rel="stylesheet">
     @livewireStyles
+    @stack('styles')
+
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main.app-content {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
 
+    @include('layouts.partials.navbar')
 
-@include('layouts.partials.navbar')
+    <main class="app-content py-4">
+        @yield('content')
+    </main>
 
-{{--<section class="parallax_window_in" data-parallax="scroll" data-image-src="{{asset('assets/img/recruitment.jpg')}}" data-natural-width="1400" data-natural-height="800">--}}
-{{--    <div id="sub_content_in">--}}
-{{--        <h1>About Potenza</h1>--}}
-{{--        <p>"Usu habeo equidem sanctus no ex melius labitur conceptam eos"</p>--}}
-{{--    </div>--}}
-{{--</section>--}}
-{{--<!-- /section -->--}}
+    @include('layouts.footer')
 
-@yield('content')
+    <!-- JavaScript Assets -->
+    <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
+    <script src="{{ asset('assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
-
-
-
-@include('layouts.footer')
-<!-- COMMON SCRIPTS -->
-<script src="{{asset('assets/js/jquery-3.5.1.min.js')}}"></script>
-<script src="{{asset('assets/js/common_scripts.min.js')}}"></script>
-<script src="{{asset('assets/js/velocity.min.js')}}"></script>
-<script src="{{asset('assets/js/common_functions.js')}}"></script>
-
-<!-- SPECIFIC SCRIPTS -->
-<script src="{{asset('assets/js/parallax.min.js')}}"></script>
-<script src="{{asset('assets/js/owl-carousel.js')}}"></script>
-<script>
-    "use strict";
-    $(".team-carousel").owlCarousel({
-        items: 1,
-        loop: false,
-        margin: 10,
-        autoplay: false,
-        smartSpeed: 300,
-        responsiveClass: false,
-        responsive: {
-            320: {
-                items: 1,
-            },
-            768: {
-                items: 2,
-            },
-            1000: {
-                items: 3,
-            }
-        }
-    });
-
-
-</script>
-
-<script src="{{asset('assets/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-@livewireScripts
+    @livewireScripts
+    @stack('scripts')
 </body>
 </html>

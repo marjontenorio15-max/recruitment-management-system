@@ -1,90 +1,126 @@
-<header class="">
-    <div id="preloader">
-        <div data-loader="circle-side"></div>
-    </div><!-- /Preload -->
+<!-- RMS Header Navbar -->
+<header class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
+    <div class="container-fluid px-lg-4">
+        <!-- Brand / Logo -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('front-page') }}">
+            <img src="{{ asset('assets/img/rms1.png') }}" alt="RMS Logo" width="38" height="38" class="d-inline-block align-text-top">
+            <span class="fw-bold text-dark fs-5">RMS</span>
+        </a>
 
-    <div id="loader_form">
-        <div data-loader="circle-side-2"></div>
-    </div><!-- /loader_form -->
+        <!-- Mobile Toggler -->
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-3">
-                <a href="{{route('front-page')}}"><img src="{{asset('assets/img/rms1.png')}}" alt="" width="50" height="50"></a>
-            </div>
-            <div class="col-6">
-                <ul>
-                    @auth()
-{{--       admin--}}
- @if(auth()->user()->role_id == 1)
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('dashboard.index')}}" class="animated-link">Dashboard</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('reports.index')}}" class="animated_link">Generate Report</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('company.index')}}" class="animated_link">Manage|Create Company</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('vacancy.index')}}" class="animated_link">Vacancy|Create Jobs</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('users.index')}}" class="animated_link">Manage Users</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('apply.index')}}" class="animated_link">Applicants Record</a></li>
-{{--             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('logout.perform')}}" class="animated_link">Logout</a></li>--}}
-             {{--                 <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('create-employer')}}" class="animated_link">Employee Record</a></li>--}}
-             {{--                 <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('application-form')}}" class="animated_link">Applicant Management</a></li>--}}
-{{--         employer--}}
- @elseif(auth()->user()->role_id == 2)
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('home.index')}}" class="animated_link">Home</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('reports.index')}}" class="animated_link">Generate Report</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('vacancy.index')}}" class="animated_link">Create Job|Vacancy</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('employer-applicant-table-record')}}" class="animated_link">Manage Applicants</a></li>
-             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('account-profile')}}" class="animated_link">Employer Profile</a></li>
-{{--             <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('logout.perform')}}" class="animated_link">Logout</a></li>--}}
-             {{--                 <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('company.index')}}" class="animated_link">Company</a></li>--}}
-{{--         Applicant--}}
- @else
-         <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('front-page')}}" class="animated_link">Home</a></li>
-         <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('view-jobs')}}" class="animated_link">Job Browse</a></li>
-         <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('applicant-dashboard')}}" class="animated_link">Applied Jobs</a></li>
-         <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('account-profile')}}" class="animated_link">Account</a></li>
-{{--         <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('logout.perform')}}" class="animated_link">Logout</a></li>--}}
- @endif
-@endauth
+        <!-- Navbar Links & User Actions -->
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-medium">
+                @auth
+                    @if(auth()->user()->role_id == 1)
+                        <!-- Admin Links -->
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard.index') ? 'active fw-bold text-primary' : '' }}" href="{{ route('dashboard.index') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('reports.index') ? 'active fw-bold text-primary' : '' }}" href="{{ route('reports.index') }}">Reports</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('company.index') ? 'active fw-bold text-primary' : '' }}" href="{{ route('company.index') }}">Companies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('vacancy.index') ? 'active fw-bold text-primary' : '' }}" href="{{ route('vacancy.index') }}">Vacancies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('users.index') ? 'active fw-bold text-primary' : '' }}" href="{{ route('users.index') }}">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('apply.index') ? 'active fw-bold text-primary' : '' }}" href="{{ route('apply.index') }}">Applicants</a>
+                        </li>
 
-@guest
-            <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('front-page')}}" class="animated-link">Home</a></li>
-            <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('term')}}" class="animated_link">Terms</a></li>
-            <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('view-jobs')}}" class="animated_link">Browse Jobs</a></li>
-            <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('about')}}" class="animated_link">About Us</a></li>
-            <li style="margin-right: 20px; margin-top: 15px; float: left;"><a href="{{route('contacts')}}" class="animated_link">Contact Us</a></li>
-@endguest
-                </ul>
-            </div>
-            <div class="col-3">
-                <div id="social">
-                    <ul>
+                    @elseif(auth()->user()->role_id == 2)
+                        <!-- Employer Links -->
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('home.index') ? 'active fw-bold text-primary' : '' }}" href="{{ route('home.index') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('reports.index') ? 'active fw-bold text-primary' : '' }}" href="{{ route('reports.index') }}">Reports</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('vacancy.index') ? 'active fw-bold text-primary' : '' }}" href="{{ route('vacancy.index') }}">Post Job</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('employer-applicant-table-record') ? 'active fw-bold text-primary' : '' }}" href="{{ route('employer-applicant-table-record') }}">Applicants</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('account-profile') ? 'active fw-bold text-primary' : '' }}" href="{{ route('account-profile') }}">Profile</a>
+                        </li>
 
+                    @else
+                        <!-- Applicant Links -->
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('front-page') ? 'active fw-bold text-primary' : '' }}" href="{{ route('front-page') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('view-jobs') ? 'active fw-bold text-primary' : '' }}" href="{{ route('view-jobs') }}">Browse Jobs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('applicant-dashboard') ? 'active fw-bold text-primary' : '' }}" href="{{ route('applicant-dashboard') }}">Applied Jobs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('account-profile') ? 'active fw-bold text-primary' : '' }}" href="{{ route('account-profile') }}">Account</a>
+                        </li>
+                    @endif
+                @endauth
 
+                @guest
+                    <!-- Guest Links -->
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('front-page') ? 'active fw-bold text-primary' : '' }}" href="{{ route('front-page') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('view-jobs') ? 'active fw-bold text-primary' : '' }}" href="{{ route('view-jobs') }}">Browse Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('about') ? 'active fw-bold text-primary' : '' }}" href="{{ route('about') }}">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('contacts') ? 'active fw-bold text-primary' : '' }}" href="{{ route('contacts') }}">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('term') ? 'active fw-bold text-primary' : '' }}" href="{{ route('term') }}">Terms</a>
+                    </li>
+                @endguest
+            </ul>
 
-{{--                        @include('layouts.partials.__nav')--}}
-{{--                        <li><a href="#0"><i class="icon-facebook"></i></a></li>--}}
-{{--                        <li><a href="#0"><i class="icon-twitter"></i></a></li>--}}
-{{--                        <li><a href="#0"><i class="icon-google"></i></a></li>--}}
-{{--                        <li><a href="#0"><i class="icon-linkedin"></i></a></li>--}}
-                        @auth
-                            <li class="text-center m-2">{{auth()->user()->username}}</li>
-                            <a href="{{ route('logout.perform') }}" class="btn btn-warning float-end">Logout</a>
-                        @endauth
+            <!-- Authentication Actions -->
+            <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                @auth
+                    <div class="dropdown">
+                        <button class="btn btn-light border rounded-pill px-3 py-1 d-flex align-items-center gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 26px; height: 26px; font-size: 0.75rem;">
+                                {{ strtoupper(substr(auth()->user()->username ?? 'U', 0, 1)) }}
+                            </span>
+                            <span class="fw-semibold text-dark small">{{ auth()->user()->username }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
+                            <li class="px-3 py-2 border-bottom">
+                                <span class="d-block text-muted small" style="font-size: 0.75rem;">Signed in as</span>
+                                <span class="fw-bold text-dark small">{{ auth()->user()->username }}</span>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger py-2 d-flex align-items-center gap-2" href="{{ route('logout.perform') }}">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                @endauth
 
-                        @guest
-                            <li><a href="{{ route('login.perform') }}" class="btn btn-primary text-white">Login</a></li>
-
-                           <li> <a href="{{ route('register.perform') }}" class="btn btn-success float-end text-white">Register</a></li>
-                        @endguest
-                    </ul>
-                </div>
-{{--                <!-- /social -->--}}
-                <!-- <a href="#0" class="cd-nav-trigger">Menu<span class="cd-icon"></span></a> -->
-                <!-- /menu button -->
-                <!-- /menu -->
+                @guest
+                    <a href="{{ route('login.perform') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">Log In</a>
+                    <a href="{{ route('register.perform') }}" class="btn btn-primary btn-sm rounded-pill px-3">Register</a>
+                @endguest
             </div>
         </div>
     </div>
-    <!-- /container -->
 </header>
-<!-- /Header -->
-
