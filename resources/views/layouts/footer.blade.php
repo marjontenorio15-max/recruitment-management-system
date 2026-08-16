@@ -1,30 +1,59 @@
-<footer class="bg-white border-top mt-auto py-4">
+<!-- Custom CSS for Corporate RMS Footer -->
+<style>
+    .rms-footer {
+        background-color: #ffffff;
+        border-top: 1px solid var(--ae-border, #e2e8f0);
+        font-size: 0.875rem;
+    }
+    .ae-footer-link {
+        color: var(--ae-text-muted, #64748b) !important;
+        font-weight: 500;
+        transition: color 0.15s ease-in-out;
+    }
+    .ae-footer-link:hover {
+        color: var(--ae-navy, #002855) !important;
+        text-decoration: underline !important;
+    }
+    .ae-brand-badge {
+        background-color: var(--ae-navy, #002855) !important;
+        border-left: 3px solid var(--ae-red, #e31837);
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 0.75rem;
+        padding: 3px 7px;
+        letter-spacing: 0.5px;
+        border-radius: 3px;
+    }
+</style>
+
+<footer class="rms-footer mt-auto py-4">
     <div class="container-xl">
         <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 text-center text-md-start">
 
             <!-- Corporate Brand & Copyright -->
             <div class="d-flex align-items-center gap-2 flex-wrap justify-content-center justify-content-md-start">
-                <div class="d-flex align-items-center gap-1">
-                    <span class="px-2 py-1 bg-dark text-white fw-bold rounded-1 extra-small" style="background-color: #002855 !important; border-left: 3px solid #e31837; letter-spacing: 0.5px;">AE</span>
-                    <span class="fw-bold text-dark fs-6 ms-1">RMS</span>
+                <div class="d-flex align-items-center gap-1.5">
+                    <span class="ae-brand-badge">AE</span>
+                    <span class="fw-bold text-dark fs-6 tracking-tight ms-1" style="color: var(--ae-navy, #002855) !important;">RMS</span>
                 </div>
+                <span class="text-muted d-none d-sm-inline">|</span>
                 <span class="text-muted small">&copy; {{ date('Y') }} AEI General Services, Inc. All rights reserved.</span>
             </div>
 
             <!-- Footer Navigation Links -->
             <nav aria-label="Footer Navigation">
                 <ul class="list-inline mb-0 small">
-                    <li class="list-inline-item me-3">
-                        <a href="{{ route('front-page') }}" class="text-secondary text-decoration-none ae-footer-link">Home</a>
+                    <li class="list-inline-item me-3 me-lg-4">
+                        <a href="{{ route('front-page') }}" class="ae-footer-link text-decoration-none">Home</a>
                     </li>
-                    <li class="list-inline-item me-3">
-                        <a href="{{ route('about') }}" class="text-secondary text-decoration-none ae-footer-link">About Us</a>
+                    <li class="list-inline-item me-3 me-lg-4">
+                        <a href="{{ route('about') }}" class="ae-footer-link text-decoration-none">About Us</a>
                     </li>
-                    <li class="list-inline-item me-3">
-                        <a href="{{ route('term') }}" class="text-secondary text-decoration-none ae-footer-link">Terms &amp; Conditions</a>
+                    <li class="list-inline-item me-3 me-lg-4">
+                        <a href="{{ route('term') }}" class="ae-footer-link text-decoration-none">Terms &amp; Conditions</a>
                     </li>
                     <li class="list-inline-item">
-                        <a href="{{ route('contacts') }}" class="text-secondary text-decoration-none ae-footer-link">Contact Us</a>
+                        <a href="{{ route('contacts') }}" class="ae-footer-link text-decoration-none">Contact Us</a>
                     </li>
                 </ul>
             </nav>
