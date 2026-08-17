@@ -60,6 +60,94 @@
             position: relative;
         }
 
+        /* Modern Enterprise Dashboard Layout */
+        .rms-dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .rms-dashboard-sidebar {
+            width: 270px;
+            min-width: 270px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #ffffff;
+        }
+
+        .sidebar-link {
+            color: #475569;
+            font-size: 0.86rem;
+            font-weight: 500;
+            padding: 0.625rem 0.875rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.18s ease;
+            text-decoration: none;
+        }
+
+        .sidebar-link:hover {
+            color: #0f172a;
+            background-color: #f1f5f9;
+        }
+
+        .sidebar-link.active {
+            color: #0f172a;
+            background-color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .rms-dashboard-main {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background-color: var(--ae-gray-bg);
+        }
+
+        .user-avatar-badge {
+            border-radius: 9999px;
+            color: #ffffff;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 991.98px) {
+            .rms-dashboard-sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                z-index: 1050;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+            }
+
+            .rms-dashboard-sidebar.show {
+                transform: translateX(0);
+            }
+
+            .sidebar-backdrop {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background-color: rgba(15, 23, 42, 0.5);
+                backdrop-filter: blur(2px);
+                z-index: 1045;
+            }
+
+            .sidebar-backdrop.show {
+                display: block;
+            }
+        }
+
         /* Modern Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--ae-gray-bg); }
@@ -88,13 +176,36 @@
 </head>
 <body>
 
-    @include('layouts.partials.navbar')
+    @auth
+        <!-- Authenticated Experience: Sidebar Navigation Layout -->
+        <div class="rms-dashboard-layout">
+            <!-- Sidebar Drawer Backdrop (Mobile) -->
+            <div class="sidebar-backdrop d-lg-none" id="sidebarBackdrop"></div>
 
-    <main class="app-content py-4">
-        @yield('content')
-    </main>
+            <!-- Dashboard Sidebar -->
+            @include('layouts.partials.sidebar')
 
-    @include('layouts.footer')
+            <!-- Main Dashboard Column -->
+            <div class="rms-dashboard-main">
+                @include('layouts.partials.dashboard-header')
+
+                <main class="dashboard-content flex-grow-1 p-3 p-md-4">
+                    @yield('content')
+                </main>
+
+                @include('layouts.footer')
+            </div>
+        </div>
+    @else
+        <!-- Guest Experience: Header Navbar Only (No Sidebar) -->
+        @include('layouts.partials.navbars.guest-navbar')
+
+        <main class="app-content py-4">
+            @yield('content')
+        </main>
+
+        @include('layouts.footer')
+    @endauth
 
     <!-- Global Toast Notification UI -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -147,6 +258,37 @@
                 }
             }, 350);
         }
+
+        // Sidebar Drawer Toggle for Mobile & Desktop
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('toggleSidebarBtn');
+            const closeBtn = document.getElementById('closeSidebarBtn');
+            const sidebar = document.getElementById('rmsAppSidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+
+            function openSidebar() {
+                if (sidebar) sidebar.classList.add('show');
+                if (backdrop) backdrop.classList.add('show');
+            }
+
+            function closeSidebar() {
+                if (sidebar) sidebar.classList.remove('show');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function () {
+                    if (sidebar && sidebar.classList.contains('show')) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                });
+            }
+
+            if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+            if (backdrop) backdrop.addEventListener('click', closeSidebar);
+        });
     </script>
 
     @livewireScripts

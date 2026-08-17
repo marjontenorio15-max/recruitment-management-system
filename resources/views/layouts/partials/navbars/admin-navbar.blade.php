@@ -30,43 +30,50 @@
 
         <!-- Navbar Links & Admin Actions -->
         <div class="collapse navbar-collapse" id="adminNavbar">
+            @php
+                $navItems = [
+                    [
+                        'label' => 'Dashboard',
+                        'route' => 'dashboard.index',
+                        'active' => 'dashboard.index',
+                        'icon' => 'bi-speedometer2 text-purple-600',
+                    ],
+                    [
+                        'label' => 'Vacancies',
+                        'route' => 'vacancy.index',
+                        'active' => 'vacancy.*',
+                        'icon' => 'bi-briefcase',
+                    ],
+                    [
+                        'label' => 'Companies',
+                        'route' => 'company.index',
+                        'active' => 'company.*',
+                        'icon' => 'bi-building',
+                    ],
+                    ['label' => 'Users', 'route' => 'users.index', 'active' => 'users.index', 'icon' => 'bi-people'],
+                    [
+                        'label' => 'Applicants',
+                        'route' => 'apply.index',
+                        'active' => 'apply.index',
+                        'icon' => 'bi-person-lines-fill',
+                    ],
+                    [
+                        'label' => 'Reports',
+                        'route' => 'reports.index',
+                        'active' => 'reports.index',
+                        'icon' => 'bi-file-earmark-bar-graph',
+                    ],
+                ];
+            @endphp
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-1">
-                <li class="nav-item">
-                    <a class="nav-link rms-nav-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}"
-                        href="{{ route('dashboard.index') }}">
-                        <i class="bi bi-speedometer2 text-purple-600"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link rms-nav-link {{ request()->routeIs('vacancy.*') ? 'active' : '' }}"
-                        href="{{ route('vacancy.index') }}">
-                        <i class="bi bi-briefcase"></i> Vacancies
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link rms-nav-link {{ request()->routeIs('company.*') ? 'active' : '' }}"
-                        href="{{ route('company.index') }}">
-                        <i class="bi bi-building"></i> Companies
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link rms-nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}"
-                        href="{{ route('users.index') }}">
-                        <i class="bi bi-people"></i> Users
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link rms-nav-link {{ request()->routeIs('apply.index') ? 'active' : '' }}"
-                        href="{{ route('apply.index') }}">
-                        <i class="bi bi-person-lines-fill"></i> Applicants
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link rms-nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}"
-                        href="{{ route('reports.index') }}">
-                        <i class="bi bi-file-earmark-bar-graph"></i> Reports
-                    </a>
-                </li>
+                @foreach ($navItems as $item)
+                    <li class="nav-item">
+                        <a class="nav-link rms-nav-link {{ request()->routeIs($item['active']) ? 'active' : '' }}"
+                            href="{{ route($item['route']) }}">
+                            <i class="bi {{ $item['icon'] }}"></i> {{ $item['label'] }}
+                        </a>
+                    </li>
+                @endforeach
             </ul>
 
             <!-- Admin Profile Dropdown -->
@@ -76,10 +83,10 @@
                         class="btn btn-light border rounded-pill px-3 py-1 d-flex align-items-center gap-2 dropdown-toggle shadow-sm"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="user-avatar-badge" style="background-color: #7c3aed;">
-                            {{ strtoupper(substr(auth()->user()->username ?? (auth()->user()->name ?? 'A'), 0, 1)) }}
+                            {{ strtoupper(substr(auth()->user()?->name ?? (auth()->user()?->username ?? 'A'), 0, 1)) }}
                         </span>
                         <span
-                            class="fw-semibold text-dark small me-1">{{ auth()->user()->username ?? (auth()->user()->name ?? 'Administrator') }}</span>
+                            class="fw-semibold text-dark small me-1">{{ auth()->user()?->name ?? (auth()->user()?->username ?? 'Administrator') }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2 p-0 overflow-hidden"
                         style="min-width: 230px;">
@@ -87,8 +94,8 @@
                             <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">System
                                 Administrator</span>
                             <span
-                                class="fw-bold text-dark small d-block text-truncate">{{ auth()->user()->name ?? auth()->user()->username }}</span>
-                            <div class="text-muted extra-small text-truncate">{{ auth()->user()->email }}</div>
+                                class="fw-bold text-dark small d-block text-truncate">{{ auth()->user()?->name ?? (auth()->user()?->username ?? 'Administrator') }}</span>
+                            <div class="text-muted extra-small text-truncate">{{ auth()->user()?->email }}</div>
                             <span class="badge bg-purple-100 text-purple-700 border border-purple-200 rounded-pill mt-1"
                                 style="font-size: 0.65rem;">
                                 Level 1 Root Access

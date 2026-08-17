@@ -1,125 +1,133 @@
-<button class="btnAddWE btn btn-outline-success shadow icon-plus m-3" style="float: right;"> Add Work Experience </button>
-<table class="tblWE table table-bordered shadow">
-  <thead>
-     <tr>
-        <th>No</th>
-        <th>Job Title</th>
-        <th>Company Name</th>
-        <th>Work Experience</th>
-        <th>Responsibilities & Achievements</th>
-        <th>Certificate</th>
-        <th>Action</th>
-     </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="8">Loading...</td>
-    </tr>
-  </tbody>
-</table>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="text-muted small">
+        <i class="bi bi-info-circle me-1"></i> Add your previous employment history, key responsibilities, and certificates.
+    </div>
+    <button class="btnAddWE btn btn-dark rounded-pill px-3 py-1.5 small fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5">
+        <i class="bi bi-plus-lg"></i>
+        <span>Add Work Experience</span>
+    </button>
+</div>
 
-<div class="modal fade" id="mdlAddWE" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <form class="frmSaveWE" method="post">
-    @csrf
-    <div class="modal-dialog modal-dialog-scrollable modal-xl">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h5 class="modal-title text-white text-center" id="staticBackdropLabel">Work Experience</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12" style="display: none;">
-                           <div class="form-group">
-                               <input type="text" name="applicant_id" class="form-control" value="{{auth()->user()->id}}">
-                               <input type="text" name="we_id" class="form-control"
-                                      placeholder="ID" readonly="true">
-                           </div>
-                       </div>
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               <label for="job_title">Job Title:</label>
-                               <input type="text" name="job_title" id="job_title" class="form-control" placeholder="Enter Job Title">
-                           </div>
-                       </div>
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               <label for="company_name">Company Name:</label>
-                               <input type="text" name="company_name" id="company_name" class="form-control" placeholder="Enter Company Name">
-                           </div>
-                       </div>
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               <label for="achievements">Achievements:</label>
-                               <textarea class="form-control" style="height:150px" id="achievements" name="achievements" placeholder="Enter Achievements"></textarea>
-                           </div>
-                       </div>
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               <label for="achievements">Certificate:</label>
-                               <input class="form-control" name="certificate" type="file">
-                           </div>
-                       </div>
+<div class="table-responsive rounded-2xl border border-slate-200 overflow-hidden mb-3">
+    <table class="tblWE table align-middle mb-0 text-sm">
+        <thead class="bg-slate-50 text-slate-700 text-xs uppercase font-bold tracking-wider">
+            <tr>
+                <th scope="col" class="py-3 px-3">#</th>
+                <th scope="col" class="py-3 px-3">Job Title</th>
+                <th scope="col" class="py-3 px-3">Company Name</th>
+                <th scope="col" class="py-3 px-3">Duration</th>
+                <th scope="col" class="py-3 px-3">Responsibilities & Achievements</th>
+                <th scope="col" class="py-3 px-3">Certificate</th>
+                <th scope="col" class="py-3 px-3 text-end">Action</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 bg-white">
+            <tr>
+                <td colspan="7" class="text-center py-4 text-muted small">Loading records...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-{{--                       <div class="col-xs-12 col-sm-12 col-md-12">--}}
-{{--                           <div class="form-group">--}}
-{{--                               <label for="period_employed">Period Employed:</label>--}}
-{{--                               <input type="date" name="period_employed" id="period_employed" class="form-control" placeholder="Enter Period Employed">--}}
-{{--                           </div>--}}
-{{--                       </div>--}}
-                       <div class="col-xs-12 col-sm-12 col-md-12">
-                           <div class="form-group">
-                               {{--                                    <input type="text" name="work_exp" class="form-control" placeholder="Qualification/Work Experience ">--}}
-                               <label for="period_employed">Work Experience:</label>
-                               <select class="form-control" name="period_employed" id="period_employed">
-                                   <option value="1 year">1 year</option>
-                                   <option value="2 years">2 years</option>
-                                   <option value="3 years">3 years</option>
-                                   <option value="4 years">4 year</option>
-                                   <option value="5 years">5 years</option>
-                                   <option value="6 years">6 years</option>
-                                   <option value="7 years">7 years</option>
-                                   <option value="8 years">8 years</option>
-                                   <option value="9 years">9 years</option>
-                                   <option value="10 years">10 years</option>
-                                   <option value="10+ years">10+ years</option>
-                               </select>
-                           </div>
-                       </div>
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="mdlAddWE" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="weModalLabel" aria-hidden="true">
+    <form class="frmSaveWE" method="post" enctype="multipart/form-data">
+        @csrf
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content rounded-3xl border-0 shadow-lg overflow-hidden">
+                <div class="modal-header bg-slate-900 text-white px-4 py-3 border-0">
+                    <h5 class="modal-title fs-6 fw-bold text-white mb-0" id="weModalLabel">
+                        <i class="bi bi-briefcase me-2"></i>Work Experience & Career Record
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-slate-50">
+                    <input type="hidden" name="applicant_id" value="{{ auth()->user()?->id }}">
+                    <input type="hidden" name="we_id">
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label text-xs fw-semibold text-slate-600 uppercase mb-1" for="job_title">Job Title *</label>
+                                <input type="text" name="job_title" id="job_title" class="form-control rounded-xl text-sm" placeholder="e.g. Senior Software Engineer" required>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label text-xs fw-semibold text-slate-600 uppercase mb-1" for="company_name">Company Name *</label>
+                                <input type="text" name="company_name" id="company_name" class="form-control rounded-xl text-sm" placeholder="e.g. Acme Corporation" required>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label text-xs fw-semibold text-slate-600 uppercase mb-1" for="period_employed">Experience Duration *</label>
+                                <select class="form-select rounded-xl text-sm" name="period_employed" id="period_employed" required>
+                                    <option value="Less than 1 year">Less than 1 year</option>
+                                    <option value="1 year">1 year</option>
+                                    <option value="2 years">2 years</option>
+                                    <option value="3 years">3 years</option>
+                                    <option value="4 years">4 years</option>
+                                    <option value="5 years">5 years</option>
+                                    <option value="6 years">6 years</option>
+                                    <option value="7 years">7 years</option>
+                                    <option value="8 years">8 years</option>
+                                    <option value="9 years">9 years</option>
+                                    <option value="10 years">10 years</option>
+                                    <option value="10+ years">10+ years</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label text-xs fw-semibold text-slate-600 uppercase mb-1" for="certificate">Certificate / Proof (Optional)</label>
+                                <input class="form-control rounded-xl text-sm" name="certificate" type="file">
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label text-xs fw-semibold text-slate-600 uppercase mb-1" for="achievements">Responsibilities & Major Achievements</label>
+                                <textarea class="form-control rounded-xl text-sm" style="height: 120px" id="achievements" name="achievements" placeholder="Describe key accomplishments, technologies used, leadership roles..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white px-4 py-3 border-top border-slate-100">
+                    <button type="button" class="btn btn-light rounded-pill px-4 small fw-semibold" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-dark rounded-pill px-4 small fw-semibold shadow-sm">Save Experience</button>
                 </div>
             </div>
-            <div class="modal-footer justify-content-center">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
         </div>
-    </div>
-  </form>
+    </form>
 </div>
 
-<div class="modal fade" id="mdlDeleteWE" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <form class="frmDeleteWE" method="post">
-    @csrf
-    <div class="modal-dialog modal-dialog-scrollable modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-center" id="staticBackdropLabel">Are you sure?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <input type="text" name="we_id" class="form-control" placeholder="ID" readonly="true" style="display: none;">
-                <p>Do you really want to delete these records? This process cannot be undone.</p>
-            </div>
-            <div class="modal-footer justify-content-center">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-danger">Delete</button>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="mdlDeleteWE" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteWeLabel" aria-hidden="true">
+    <form class="frmDeleteWE" method="post">
+        @csrf
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content rounded-3xl border-0 shadow-lg overflow-hidden">
+                <div class="modal-body p-4 text-center">
+                    <input type="hidden" name="we_id">
+                    <div class="rounded-circle bg-rose-50 text-rose-600 d-inline-flex align-items-center justify-content-center mb-3" style="width: 52px; height: 52px;">
+                        <i class="bi bi-trash3 fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark fs-6 mb-1">Delete Work Experience</h5>
+                    <p class="text-muted small mb-0">Are you sure you want to remove this record from your profile?</p>
+                </div>
+                <div class="modal-footer bg-slate-50 px-4 py-3 border-0 justify-content-center gap-2">
+                    <button type="button" class="btn btn-light rounded-pill px-3 small fw-semibold" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-3 small fw-semibold shadow-sm">Confirm Delete</button>
+                </div>
             </div>
         </div>
-    </div>
-  </form>
+    </form>
 </div>
 
-<input type="text" class="txtStorage" value="<?php echo asset("storage/uploads/file_name")?>" style="display: none;">
+<input type="hidden" class="txtStorage" value="<?php echo asset("storage/uploads/file_name")?>">
 
 <script type="text/javascript">
   $(document).ready(function() {
@@ -128,6 +136,7 @@
 
     $('.btnAddWE').click(function(){
         $('.frmSaveWE')[0].reset();
+        $('.frmSaveWE input[name="we_id"]').val('');
         $('#mdlAddWE').modal('show');
     });
 
@@ -158,37 +167,36 @@
             url: "{{ url('/getWE') }}",
             data: null,
             beforeSend: function() {
-                var html ='<td colspan="8">Loading...</td>';
+                var html ='<tr><td colspan="7" class="text-center py-4 text-muted small">Loading records...</td></tr>';
                 $('.tblWE tbody').html(html);
             },
             success: function(result){
                 var html = '';
                 if(result && result.data && result.data.length > 0) {
                     for (var index = 0; index < result.data.length; index++) {
-                      html += '<tr>';
-                         html += '<td scope="row"><b>' + (index + 1) + '</b></td>';
-                         html += '<td>' + (result.data[index].job_title || '') + '</td>';
-                         html += '<td>' + (result.data[index].company_name || '') + '</td>';
-                         html += '<td>' + (result.data[index].period_employed || '') + '</td>';
-                         html += '<td>' + (result.data[index].achievements || '') + '</td>';
+                      html += '<tr class="hover:bg-slate-50/80 transition-colors">';
+                         html += '<td class="py-3 px-3 fw-bold text-slate-700">' + (index + 1) + '</td>';
+                         html += '<td class="py-3 px-3 fw-semibold text-slate-900">' + (result.data[index].job_title || '') + '</td>';
+                         html += '<td class="py-3 px-3 text-slate-700">' + (result.data[index].company_name || '') + '</td>';
+                         html += '<td class="py-3 px-3"><span class="badge bg-amber-50 text-amber-800 border border-amber-200 rounded-pill px-2.5 py-1 text-xs">' + (result.data[index].period_employed || '') + '</span></td>';
+                         html += '<td class="py-3 px-3 text-slate-600 text-xs max-w-xs">' + (result.data[index].achievements || '') + '</td>';
                          if(result.data[index].certificate != null && result.data[index].certificate != '') {
-                          html += '<td><a href="' + storage.replace('file_name', result.data[index].certificate)  + '" target="_blank" style="color: blue;"><span class="icon-download"></span> Download</a></td>';
+                          html += '<td class="py-3 px-3"><a href="' + storage.replace('file_name', result.data[index].certificate)  + '" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-0.5 text-xs d-inline-flex align-items-center gap-1"><i class="bi bi-download"></i> View</a></td>';
                          }
                          else {
-                          html += '<td>N/A</td>';
+                          html += '<td class="py-3 px-3 text-slate-400 text-xs">—</td>';
                          }
-                         html += '<td>';
-                         html += '<div class="btn-group shadow">';
-                             html += '<button class="btnEditWE btn btn-outline-primary shadow icon-edit" we-id="' + result.data[index].id + '"></button>';
-                             html += '<button class="btnDeleteWE btn btn-outline-danger icon-trash-7 shadow" we-id="' + result.data[index].id + '"></button>';
+                         html += '<td class="py-3 px-3 text-end">';
+                         html += '<div class="btn-group btn-group-sm rounded-xl overflow-hidden border border-slate-200 shadow-sm">';
+                             html += '<button type="button" class="btnEditWE btn btn-light text-slate-700 hover:bg-slate-100" we-id="' + result.data[index].id + '" title="Edit"><i class="bi bi-pencil"></i></button>';
+                             html += '<button type="button" class="btnDeleteWE btn btn-light text-rose-600 hover:bg-rose-50" we-id="' + result.data[index].id + '" title="Delete"><i class="bi bi-trash3"></i></button>';
                          html += '</div>';
-
                          html += '</td>';
-                       html += '</tr>';
+                      html += '</tr>';
                     }
                 }
                 else {
-                    html ='<td colspan="8">No record found.</td>';
+                    html ='<tr><td colspan="7" class="text-center py-4 text-muted small">No work experience records added yet.</td></tr>';
                 }
 
                 $('.tblWE tbody').html(html);
@@ -233,7 +241,6 @@
                 GetWE();
                 $('#mdlAddWE').modal('hide');
                 $('.frmSaveWE')[0].reset();
-                alert('Record Saved!');
             }
         })
     }
@@ -250,7 +257,6 @@
                 GetWE();
                 $('#mdlDeleteWE').modal('hide');
                 $('.frmDeleteWE')[0].reset();
-                alert('Record Deleted!');
             }
         })
     }

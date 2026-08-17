@@ -70,17 +70,17 @@
                 </li>
             </ul>
 
-            <!-- Applicant Profile Dropdown -->
+            <!-- Applicant Profile Dropdown & Quick Actions -->
             <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
                 <div class="dropdown">
                     <button
                         class="btn btn-light border rounded-pill px-3 py-1 d-flex align-items-center gap-2 dropdown-toggle shadow-sm"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="user-avatar-badge" style="background-color: #10b981;">
-                            {{ strtoupper(substr(auth()->user()->username ?? (auth()->user()->name ?? 'U'), 0, 1)) }}
+                            {{ strtoupper(substr(auth()->user()?->name ?? (auth()->user()?->username ?? 'U'), 0, 1)) }}
                         </span>
                         <span
-                            class="fw-semibold text-dark small me-1">{{ auth()->user()->username ?? (auth()->user()->name ?? 'Jobseeker') }}</span>
+                            class="fw-semibold text-dark small me-1">{{ auth()->user()?->name ?? (auth()->user()?->username ?? 'Jobseeker') }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2 p-0 overflow-hidden"
                         style="min-width: 230px;">
@@ -88,8 +88,8 @@
                             <span class="d-block text-muted text-uppercase fw-bold"
                                 style="font-size: 0.65rem;">Candidate Account</span>
                             <span
-                                class="fw-bold text-dark small d-block text-truncate">{{ auth()->user()->name ?? auth()->user()->username }}</span>
-                            <div class="text-muted extra-small text-truncate">{{ auth()->user()->email }}</div>
+                                class="fw-bold text-dark small d-block text-truncate">{{ auth()->user()?->name ?? (auth()->user()?->username ?? 'Jobseeker') }}</span>
+                            <div class="text-muted extra-small text-truncate">{{ auth()->user()?->email }}</div>
                             <span
                                 class="badge bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-pill mt-1"
                                 style="font-size: 0.65rem;">
@@ -117,6 +117,13 @@
                         </li>
                     </ul>
                 </div>
+
+                <a href="{{ route('logout.perform') }}"
+                   class="btn btn-outline-danger btn-sm rounded-pill px-2.5 py-1.5 d-none d-md-inline-flex align-items-center gap-1 shadow-sm"
+                   title="Sign Out">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="small fw-semibold">Exit</span>
+                </a>
             </div>
         </div>
     </div>
