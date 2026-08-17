@@ -4,24 +4,38 @@ namespace App\Http\Controllers\Job;
 
 use App\Http\Controllers\Controller;
 use App\Models\Apply;
+use App\Models\Vacancy;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ApplyController extends Controller
 {
     public function index()
     {
-        $data = DB::table('apply')
-//            ->where('tbl_job_list.company_id', auth()->user()->id)
-            ->join('tbl_job_list', 'apply.job_id', 'tbl_job_list.id')
-            ->join('applicants', 'apply.applicant_id', 'applicants.applicant_id')
-            ->join('companies', 'tbl_job_list.company_id', 'companies.company_id')
-            ->select('apply.remarks', 'apply.id', 'applicants.file_attachment',
-                'apply.created_at', 'tbl_job_list.title', 'companies.company_name',
-                'applicants.first_name', 'applicants.last_name', 'applicants.middle_name', 'apply.description')
-            ->simplePaginate(10);
+        $query = Apply::query()
+            ->join('tbl_job_list', 'apply.job_id', '=', 'tbl_job_list.id')
+            ->join('applicants', 'apply.applicant_id', '=', 'applicants.applicant_id')
+            ->join('companies', 'tbl_job_list.company_id', '=', 'companies.company_id')
+            ->select(
+                'apply.remarks',
+                'apply.id',
+                'applicants.file_attachment',
+                'apply.created_at',
+                'tbl_job_list.title',
+                'companies.company_name',
+                'applicants.first_name',
+                'applicants.last_name',
+                'applicants.middle_name',
+                'apply.description'
+            );
 
-        //        $data = Apply::latest()->paginate(5);
+        if (Auth::check() && Auth::user()->role_id == 2) {
+            $query->where('tbl_job_list.company_id', Auth::id());
+        }
+
+        $data = $query->latest('apply.created_at')->simplePaginate(10);
 
         return view('applications.index', compact('data'))
             ->with('i', (request()->input('page', 1) - 1) * 10);
@@ -34,13 +48,14 @@ class ApplyController extends Controller
 
     public function store(Request $request)
     {
-        //        $request->validate([
-        //            'job_id' => 'required',
-        //            'applicant_id' => 'required',
-        //
-        //        ]);
+        $validated = $request->validate([
+            'job_id' => 'required',
+            'applicant_id' => 'required',
+            'remarks' => 'nullable|string',
+            'description' => 'nullable|string',
+        ]);
 
-        Apply::create($request->all());
+        Apply::create($validated);
 
         return redirect()->route('apply.index')
             ->with('success', 'Created successfully.');
@@ -52,7 +67,7 @@ class ApplyController extends Controller
             'job_id' => 'required',
         ]);
 
-        $applicantId = auth()->id();
+        $applicantId = Auth::id();
 
         $existing = Apply::where('job_id', $request->job_id)
             ->where('applicant_id', $applicantId)
@@ -84,12 +99,12 @@ class ApplyController extends Controller
 
     public function update(Request $request, Apply $apply)
     {
-        //        $request->validate([
-        // //            'job_id' => 'required',
-        // //            'applicant_id' => 'required',
-        //        ]);
+        $validated = $request->validate([
+            'remarks' => 'nullable|string',
+            'description' => 'nullable|string',
+        ]);
 
-        $apply->update($request->all());
+        $apply->update($validated);
 
         return redirect()->route('apply.index')
             ->with('success', 'Updated successfully');
@@ -103,21 +118,28 @@ class ApplyController extends Controller
             ->with('success', 'Deleted successfully');
     }
 
+    /**
+     * @param  int|string  $id
+     * @return View|RedirectResponse
+     */
     public function get($id)
     {
-        $vacancy = DB::table('tbl_job_list')->find($id);
-        //        $get = $id;
-        $appliedApplicant = DB::table('apply')->select('apply.job_id')
-            ->where('apply.applicant_id', auth()->user()->id)
-            ->where('apply.job_id', $id)->get();
+        $vacancy = Vacancy::find($id);
 
-        foreach ($appliedApplicant as $applicants) {
-            if ($applicants->job_id == $id) {
-                return redirect()->back()->with(['message' => 'You already applied to this job!'], compact('vacancy'));
-            }
+        if (! $vacancy) {
+            return redirect()->route('view-jobs')->with('error', 'Job vacancy not found.');
         }
+
+        $appliedApplicant = Apply::select('apply.job_id')
+            ->where('apply.applicant_id', Auth::id())
+            ->where('apply.job_id', $id)->first();
+
+        if ($appliedApplicant) {
+            return redirect()->back()->with(['message' => 'You already applied to this job!'], compact('vacancy'));
+        }
+
         Apply::create([
-            'applicant_id' => auth()->user()->id,
+            'applicant_id' => Auth::id(),
             'job_id' => $vacancy->id,
             'remarks' => 'Pending',
             'description' => '',
@@ -128,10 +150,10 @@ class ApplyController extends Controller
 
     public function get_applicants(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Start base query
-        $query = DB::table('apply')
+        $query = Apply::query()
             ->join('tbl_job_list', 'apply.job_id', '=', 'tbl_job_list.id')
             ->join('applicants', 'apply.applicant_id', '=', 'applicants.applicant_id')
             ->join('companies', 'tbl_job_list.company_id', '=', 'companies.company_id')

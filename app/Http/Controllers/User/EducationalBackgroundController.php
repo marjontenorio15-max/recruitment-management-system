@@ -5,21 +5,21 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Degree;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EducationalBackgroundController extends Controller
 {
     public function index()
     {
-        $data = Degree::where('educational_background.applicant_id', auth()->user()->id)->latest()->paginate(5);
+        $data = Degree::where('applicant_id', Auth::id())->latest()->paginate(5);
 
-        //        return view('education.index',compact('data'))
         return view('education.index', compact('data'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
     public function getEB(Request $request)
     {
-        $data = Degree::where('applicant_id', auth()->user()->id)->get();
+        $data = Degree::where('applicant_id', Auth::id())->get();
 
         return response()->json(['data' => $data]);
     }
@@ -31,36 +31,22 @@ class EducationalBackgroundController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            // 'school_name' => 'bail|required|max:255',
-            'school_name' => 'required',
-            'school_location' => 'required',
-            'degree' => 'required',
-            'field_of_study' => 'required',
-            'month_graduate' => 'required',
-            'year_graduate' => 'required',
+        $validated = $request->validate([
+            'school_name' => 'required|string|max:255',
+            'school_location' => 'required|string|max:255',
+            'degree' => 'required|string|max:255',
+            'field_of_study' => 'required|string|max:255',
+            'month_graduate' => 'required|string|max:255',
+            'year_graduate' => 'required|numeric',
         ]);
-        if (! isset($request->eb_id)) {
-            Degree::create([
-                'applicant_id' => auth()->user()->id,
-                'school_name' => $request->school_name,
-                'school_location' => $request->school_location,
-                'degree' => $request->degree,
-                'field_of_study' => $request->field_of_study,
-                'month_graduate' => $request->month_graduate,
-                'year_graduate' => $request->year_graduate,
-            ]);
+
+        if (empty($request->eb_id)) {
+            $validated['applicant_id'] = Auth::id();
+            Degree::create($validated);
         } else {
             Degree::where('id', $request->eb_id)
-                ->update([
-                    'applicant_id' => auth()->user()->id,
-                    'school_name' => $request->school_name,
-                    'school_location' => $request->school_location,
-                    'degree' => $request->degree,
-                    'field_of_study' => $request->field_of_study,
-                    'month_graduate' => $request->month_graduate,
-                    'year_graduate' => $request->year_graduate,
-                ]);
+                ->where('applicant_id', Auth::id())
+                ->update($validated);
         }
 
         return response()->json(['result' => 1]);
@@ -73,6 +59,7 @@ class EducationalBackgroundController extends Controller
         ]);
 
         Degree::where('id', $request->eb_id)
+            ->where('applicant_id', Auth::id())
             ->delete();
 
         return response()->json(['result' => 1]);
@@ -80,7 +67,9 @@ class EducationalBackgroundController extends Controller
 
     public function getEBById(Request $request)
     {
-        $data = Degree::where('id', $request->id)->first();
+        $data = Degree::where('id', $request->id)
+            ->where('applicant_id', Auth::id())
+            ->first();
 
         return response()->json(['data' => $data]);
     }

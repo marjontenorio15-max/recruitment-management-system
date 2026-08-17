@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleLoginController extends Controller
@@ -28,32 +30,38 @@ class GoogleLoginController extends Controller
     public function callback()
     {
         try {
+            $googleUser = Socialite::driver('google')->user();
 
-            $user = Socialite::driver('google')->user();
+            $existingUser = User::where('google_id', $googleUser->id)
+                ->orWhere('email', $googleUser->email)
+                ->first();
 
-            $finduser = User::where('google_id', $user->id)->first();
+            if ($existingUser) {
+                if (empty($existingUser->google_id)) {
+                    $existingUser->update(['google_id' => $googleUser->id]);
+                }
 
-            if ($finduser) {
-
-                Auth::login($finduser);
-
-                return redirect()->intended('/');
-
-            } else {
-                $newUser = User::create([
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'google_id' => $user->id,
-                    'password' => 'dummypass', // you can change auto generate password here and send it via email but you need to add checking that the user need to change the password for security reasons
-                ]);
-
-                Auth::login($newUser);
+                Auth::login($existingUser);
 
                 return redirect()->intended('/');
             }
 
+            $newUser = User::create([
+                'name' => $googleUser->name,
+                'username' => $googleUser->email,
+                'email' => $googleUser->email,
+                'google_id' => $googleUser->id,
+                'role_id' => 3,
+                'password' => Hash::make(Str::random(32)),
+            ]);
+
+            Auth::login($newUser);
+
+            return redirect()->intended('/');
+
         } catch (Exception $e) {
-            dd($e->getMessage());
+            return redirect()->route('login.show')
+                ->withErrors(['google' => 'Unable to sign in with Google: '.$e->getMessage()]);
         }
     }
 }

@@ -5,14 +5,13 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Exp;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ExpController extends Controller
 {
-    //
     public function index()
     {
-        $data = DB::table('experience')->where('experience.applicant_id', auth()->user()->id)->latest()->paginate(5);
+        $data = Exp::where('applicant_id', Auth::id())->latest()->paginate(5);
 
         return view('work-experience.index', compact('data'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
@@ -20,7 +19,7 @@ class ExpController extends Controller
 
     public function getWE(Request $request)
     {
-        $data = DB::table('experience')->where('experience.applicant_id', auth()->user()->id)->get();
+        $data = Exp::where('applicant_id', Auth::id())->get();
 
         return response()->json(['data' => $data]);
     }
@@ -47,44 +46,33 @@ class ExpController extends Controller
 
     public function saveWE(Request $request)
     {
-        $request->validate([
-            'job_title' => 'required',
-            'company_name' => 'required',
-            'period_employed' => 'required',
-            'achievements' => 'required',
+        $validated = $request->validate([
+            'job_title' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'period_employed' => 'required|string|max:255',
+            'achievements' => 'required|string',
         ]);
 
+        $validated['applicant_id'] = Auth::id();
+
         if (! isset($request->we_id)) {
-            $fileName = null;
-
-            if ($request->file()) {
-                $fileName = time().'_'.$request->certificate->getClientOriginalName();
-                $filePath = $request->file('certificate')->storeAs('uploads', $fileName, 'public');
-
-                Exp::create(array_merge($request->all(), ['certificate' => $fileName, 'applicant_id' => auth()->user()->id]));
-            } else {
-                Exp::create(array_merge($request->all(), ['applicant_id' => auth()->user()->id]));
+            if ($request->hasFile('certificate')) {
+                $fileName = time().'_'.$request->file('certificate')->getClientOriginalName();
+                $request->file('certificate')->storeAs('uploads', $fileName, 'public');
+                $validated['certificate'] = $fileName;
             }
+
+            Exp::create($validated);
         } else {
-
-            $data = [
-                'job_title' => $request->job_title,
-                'company_name' => $request->company_name,
-                'period_employed' => $request->period_employed,
-                'achievements' => $request->achievements,
-            ];
-
-            $fileName = null;
-
-            if ($request->file()) {
-                $fileName = time().'_'.$request->certificate->getClientOriginalName();
-                $filePath = $request->file('certificate')->storeAs('uploads', $fileName, 'public');
-
-                $data['certificate'] = $fileName;
+            if ($request->hasFile('certificate')) {
+                $fileName = time().'_'.$request->file('certificate')->getClientOriginalName();
+                $request->file('certificate')->storeAs('uploads', $fileName, 'public');
+                $validated['certificate'] = $fileName;
             }
 
             Exp::where('id', $request->we_id)
-                ->update($data);
+                ->where('applicant_id', Auth::id())
+                ->update($validated);
         }
 
         return response()->json(['result' => 1]);
@@ -97,6 +85,7 @@ class ExpController extends Controller
         ]);
 
         Exp::where('id', $request->we_id)
+            ->where('applicant_id', Auth::id())
             ->delete();
 
         return response()->json(['result' => 1]);
@@ -104,7 +93,9 @@ class ExpController extends Controller
 
     public function getWEById(Request $request)
     {
-        $data = Exp::where('id', $request->id)->first();
+        $data = Exp::where('id', $request->id)
+            ->where('applicant_id', Auth::id())
+            ->first();
 
         return response()->json(['data' => $data]);
     }

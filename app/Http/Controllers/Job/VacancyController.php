@@ -5,13 +5,18 @@ namespace App\Http\Controllers\Job;
 use App\Http\Controllers\Controller;
 use App\Models\Apply;
 use App\Models\Vacancy;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class VacancyController extends Controller
 {
     public function index()
     {
+        if (Auth::check() && Auth::user()->role_id == 3) {
+            return redirect()->route('view-jobs');
+        }
+
         $query = Vacancy::select(
             'tbl_job_list.id as id',
             'tbl_job_list.title',
@@ -31,10 +36,10 @@ class VacancyController extends Controller
             ->leftJoin('companies', 'companies.company_id', '=', 'tbl_job_list.company_id')
             ->orderBy('tbl_job_list.created_at', 'desc');
 
-        if (auth()->user()->role_id != 1) {
+        if (Auth::check() && Auth::user()->role_id != 1) {
             $query->where(function ($q) {
-                $q->where('tbl_job_list.company_id', auth()->user()->id)
-                    ->orWhere('tbl_job_list.created_by', auth()->user()->id);
+                $q->where('tbl_job_list.company_id', Auth::id())
+                    ->orWhere('tbl_job_list.created_by', Auth::id());
             });
         }
 
@@ -46,80 +51,80 @@ class VacancyController extends Controller
 
     public function create()
     {
+        if (! Auth::check() || ! in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('view-jobs')->with('error', 'Only employers and administrators can post vacancies.');
+        }
+
         return view('vacancy.create');
     }
 
     public function store(Request $request)
     {
-        date_default_timezone_set('Asia/Manila');
-        $request->validate([
-            'title' => 'required',
-            //            'job_details' => 'required',
-            'no_of_employee' => 'required',
-            'salary' => 'required',
-            //            'duration_employment' => 'required',
-            'sex' => 'required',
-            //            'section_vacancy'=> 'required',
-            'degree' => 'required',
-            'work_exp' => 'required',
-            'job_desc' => 'required',
-            'location' => 'required',
+        if (! Auth::check() || ! in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('view-jobs')->with('error', 'Only employers and administrators can post vacancies.');
+        }
 
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'no_of_employee' => 'required',
+            'salary' => 'required|string|max:255',
+            'sex' => 'required|string',
+            'degree' => 'required|string',
+            'work_exp' => 'required|string',
+            'job_desc' => 'required|string',
+            'location' => 'required|string',
         ]);
 
-        $data = [
-            'title' => $request->title,
-            'company_id' => auth()->user()->id,
-            //            'job_details' => $request->job_details,
-            'created_by' => auth()->user()->id,
+        $validated['company_id'] = Auth::id();
+        $validated['created_by'] = Auth::id();
+        $validated['status'] = 1;
 
-            'no_of_employee' => $request->no_of_employee,
-            'salary' => $request->salary,
-            //            'duration_employment' => $request->duration_employment,
-            'sex' => $request->sex,
-            'degree' => $request->degree,
-            //            'section_vacancy' => $request->section_vacancy,
-            'work_exp' => $request->work_exp,
-            'job_desc' => $request->job_desc,
-            'location' => $request->location,
-        ];
-
-        Vacancy::create($data);
+        Vacancy::create($validated);
 
         return redirect()->route('vacancy.index')
             ->with('success', 'Job created successfully.');
-
     }
 
     public function show(Vacancy $vacancy)
     {
-
         return view('vacancy.show', compact('vacancy'));
-
     }
 
     public function edit(Vacancy $vacancy)
     {
+        if (! Auth::check() || ! in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('view-jobs')->with('error', 'Unauthorized action.');
+        }
+
+        if (Auth::user()->role_id == 2 && $vacancy->created_by != Auth::id() && $vacancy->company_id != Auth::id()) {
+            abort(403, 'Unauthorized: You can only edit your own vacancies.');
+        }
+
         return view('vacancy.edit', compact('vacancy'));
     }
 
     public function update(Request $request, Vacancy $vacancy)
     {
-        $request->validate([
-            'title' => 'required',
-            //            'job_details' => 'required',
+        if (! Auth::check() || ! in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('view-jobs')->with('error', 'Unauthorized action.');
+        }
+
+        if (Auth::user()->role_id == 2 && $vacancy->created_by != Auth::id() && $vacancy->company_id != Auth::id()) {
+            abort(403, 'Unauthorized: You can only update your own vacancies.');
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
             'no_of_employee' => 'required',
-            'salary' => 'required',
-            //            'duration_employment' => 'required',
-            'sex' => 'required',
-            'degree' => 'required',
-            //            'section_vacancy'=> 'required',
-            'work_exp' => 'required',
-            'job_desc' => 'required',
-            'location' => 'required',
+            'salary' => 'required|string|max:255',
+            'sex' => 'required|string',
+            'degree' => 'required|string',
+            'work_exp' => 'required|string',
+            'job_desc' => 'required|string',
+            'location' => 'required|string',
         ]);
 
-        $vacancy->update($request->all());
+        $vacancy->update($validated);
 
         return redirect()->route('vacancy.index')
             ->with('success', 'Job updated successfully');
@@ -127,56 +132,64 @@ class VacancyController extends Controller
 
     public function destroy(Vacancy $vacancy)
     {
+        if (! Auth::check() || ! in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('view-jobs')->with('error', 'Unauthorized action.');
+        }
+
+        if (Auth::user()->role_id == 2 && $vacancy->created_by != Auth::id() && $vacancy->company_id != Auth::id()) {
+            abort(403, 'Unauthorized: You can only delete your own vacancies.');
+        }
+
         $vacancy->delete();
 
         return redirect()->route('vacancy.index')
             ->with('success', 'Post deleted successfully');
     }
 
+    /**
+     * @param  int|string  $id
+     * @return RedirectResponse
+     */
     public function updateStatus($id)
     {
-        // get product status with the help of product ID
-        $product = DB::table('tbl_job_list')
-            ->select('status')
-            ->where('id', '=', $id)
-            ->first();
+        $product = Vacancy::find($id);
 
-        // Check vacancy status
-        if ($product->status == '1') {
-            $status = '0';
-        } else {
-            $status = '1';
+        if (! $product) {
+            return redirect()->route('vacancy.index')->with('error', 'Vacancy record not found.');
         }
 
-        // update icon-switch status
-        $values = ['status' => $status];
-        DB::table('tbl_job_list')->where('id', $id)->update($values);
+        if (Auth::check() && Auth::user()->role_id == 2 && $product->created_by != Auth::id() && $product->company_id != Auth::id()) {
+            abort(403, 'Unauthorized: You can only change the status of your own vacancies.');
+        }
 
-        session()->flash('msg', 'Product status has been updated successfully.');
+        $newStatus = ($product->status == '1' || $product->status == 1) ? '0' : '1';
 
-        return redirect('/vacancy');
+        $product->update(['status' => $newStatus]);
+
+        session()->flash('msg', 'Vacancy status has been updated successfully.');
+
+        return redirect()->route('vacancy.index');
     }
 
     public function getVacancies(Request $request)
     {
-        $vacancies = DB::table('tbl_job_list')
-            ->select(
-                'tbl_job_list.id as id',
-                'tbl_job_list.title',
-                'tbl_job_list.company_id',
-                'tbl_job_list.location',
-                'tbl_job_list.degree',
-                'tbl_job_list.no_of_employee',
-                'tbl_job_list.salary',
-                'tbl_job_list.sex',
-                'tbl_job_list.work_exp',
-                'tbl_job_list.job_desc',
-                'users.name as created_by',
-                'users.username',
-                'companies.company_name',
-                'tbl_job_list.created_at',
-                'tbl_job_list.status'
-            )
+        $vacancies = Vacancy::select(
+            'tbl_job_list.id as id',
+            'tbl_job_list.title',
+            'tbl_job_list.company_id',
+            'tbl_job_list.location',
+            'tbl_job_list.degree',
+            'tbl_job_list.no_of_employee',
+            'tbl_job_list.salary',
+            'tbl_job_list.sex',
+            'tbl_job_list.work_exp',
+            'tbl_job_list.job_desc',
+            'users.name as created_by',
+            'users.username',
+            'companies.company_name',
+            'tbl_job_list.created_at',
+            'tbl_job_list.status'
+        )
             ->leftJoin('users', 'users.id', '=', 'tbl_job_list.created_by')
             ->leftJoin('companies', 'companies.company_id', '=', 'tbl_job_list.company_id')
             ->orderBy('tbl_job_list.created_at', 'desc');
@@ -204,12 +217,12 @@ class VacancyController extends Controller
 
     public function getBestApplicant(Request $request)
     {
-        $apply = Apply::select('*')
+        $jobId = Apply::select('*')
             ->join('applicants', 'applicants.applicant_id', '=', 'apply.applicant_id')
             ->orderBy('apply.created_at', 'asc')
             ->where('apply.job_id', $request->jobId)
             ->get();
 
-        return response()->json(['data' => $apply]);
+        return response()->json(['data' => $jobId]);
     }
 }

@@ -9,15 +9,19 @@ class UploadController extends Controller
 {
     public function myFileSave(Request $request)
     {
-        $path = 'upload_files/';
-        $file = $request->file('myfile');
-        //        $savetodb = $path + $file;
-        $upload = $file->move(public_path($path), $file->getClientOriginalName());
-        if ($upload) {
-            echo '<script>alert("uploaded")</script>';
-        } else {
-            echo '<script>alert("sorry")</script>';
+        $request->validate([
+            'myfile' => 'required|file|max:10240',
+        ]);
+
+        if ($request->hasFile('myfile')) {
+            $path = 'upload_files/';
+            $file = $request->file('myfile');
+            $fileName = time().'_'.$file->getClientOriginalName();
+            $file->move(public_path($path), $fileName);
+
+            return redirect()->back()->with('success', 'File uploaded successfully.');
         }
 
+        return redirect()->back()->with('error', 'Please select a valid file to upload.');
     }
 }

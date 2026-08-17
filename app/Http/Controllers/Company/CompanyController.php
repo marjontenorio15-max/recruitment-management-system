@@ -6,18 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
 {
     public function index()
     {
-        $query = DB::table('companies')->select('companies.company_name', 'companies.address',
-            'companies.contact_no', 'users.email', 'users.username', 'companies.company_id', 'companies.id')
-            ->join('users', 'users.id', 'companies.company_id');
+        $query = Company::select(
+            'companies.company_name',
+            'companies.address',
+            'companies.contact_no',
+            'users.email',
+            'users.username',
+            'companies.company_id',
+            'companies.id'
+        )
+            ->join('users', 'users.id', '=', 'companies.company_id');
 
-        if (auth()->user()->role_id == 2) {
-            $query->where('companies.company_id', auth()->id());
+        if (Auth::check() && Auth::user()->role_id == 2) {
+            $query->where('companies.company_id', Auth::id());
         }
 
         $data = $query->paginate(10);
@@ -33,25 +41,35 @@ class CompanyController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|min:6',
+            'company_name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'contact_no' => 'required',
+        ]);
 
         DB::transaction(function () use ($request) {
+            $user = User::create([
+                'name' => $request->name,
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => $request->password,
+                'role_id' => 2,
+            ]);
 
-            $user = User::create(array_merge($request->all(), ['role_id' => 2]));
-
-            $userid = $user->id;
-
-            //        $request->validate([
-            //
-            //
-            //        ]);
-
-            Company::create(array_merge($request->all(), ['company_id' => $userid]));
-
+            Company::create([
+                'company_id' => $user->id,
+                'company_name' => $request->company_name,
+                'address' => $request->address,
+                'contact_no' => $request->contact_no,
+            ]);
         });
 
         return redirect()->route('company.index')
-            ->with('success', 'Post created successfully.');
-
+            ->with('success', 'Company created successfully.');
     }
 
     public function show(Company $company)
@@ -61,25 +79,41 @@ class CompanyController extends Controller
 
     public function edit(Company $company)
     {
+        if (Auth::check() && Auth::user()->role_id == 2 && $company->company_id != Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         return view('companies.edit', compact('company'));
     }
 
     public function update(Request $request, Company $company)
     {
+        if (Auth::check() && Auth::user()->role_id == 2 && $company->company_id != Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
-        $company->update($request->all());
+        $validated = $request->validate([
+            'company_name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'contact_no' => 'required',
+        ]);
+
+        $company->update($validated);
 
         return redirect()->route('company.index')
-            ->with('success', 'Post updated successfully');
+            ->with('success', 'Company updated successfully');
     }
 
     public function destroy(Company $company)
     {
+        if (Auth::check() && Auth::user()->role_id == 2 && $company->company_id != Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $company->delete();
 
         return redirect()->route('company.index')
-            ->with('success', 'Post deleted successfully');
+            ->with('success', 'Company deleted successfully');
     }
 
     public function updateEmployerProfile(Request $request)
@@ -91,7 +125,7 @@ class CompanyController extends Controller
         ]);
 
         Company::updateOrCreate(
-            ['company_id' => auth()->id()],
+            ['company_id' => Auth::id()],
             [
                 'company_name' => $request->company_name,
                 'address' => $request->address,
@@ -100,7 +134,7 @@ class CompanyController extends Controller
         );
 
         if ($request->filled('name')) {
-            User::where('id', auth()->id())->update([
+            User::where('id', Auth::id())->update([
                 'name' => $request->name,
             ]);
         }

@@ -8,7 +8,6 @@ use App\Models\Company;
 use App\Models\User;
 use App\Models\Vacancy;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class ChartJSController extends Controller
 {
@@ -37,7 +36,7 @@ class ChartJSController extends Controller
         }
 
         // Recent Applications (Latest 5)
-        $recentApplies = DB::table('apply')
+        $recentApplies = Apply::query()
             ->join('tbl_job_list', 'apply.job_id', '=', 'tbl_job_list.id')
             ->join('applicants', 'apply.applicant_id', '=', 'applicants.applicant_id')
             ->leftJoin('companies', 'tbl_job_list.company_id', '=', 'companies.company_id')
@@ -55,7 +54,7 @@ class ChartJSController extends Controller
             ->get();
 
         // Recent Vacancies (Latest 5)
-        $recentVacancies = DB::table('tbl_job_list')
+        $recentVacancies = Vacancy::query()
             ->leftJoin('companies', 'tbl_job_list.company_id', '=', 'companies.company_id')
             ->select('tbl_job_list.*', 'companies.company_name')
             ->latest('tbl_job_list.created_at')

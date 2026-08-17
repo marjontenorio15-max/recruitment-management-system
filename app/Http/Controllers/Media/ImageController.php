@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Media;
 use App\Http\Controllers\Controller;
 use App\Models\Image;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 
 class ImageController extends Controller
@@ -18,49 +18,39 @@ class ImageController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the inputs
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
+            'image' => 'required|image|mimes:jpeg,bmp,png,jpg,webp|max:5120',
         ]);
-        //
-        // ensure the request has a file before we attempt anything else.
+
         if ($request->hasFile('image')) {
+            $imageFile = $request->file('image');
+            $imageName = time().'.'.$imageFile->getClientOriginalExtension();
 
-            $request->validate([
-                'image' => 'mimes:jpeg,bmp,png', // Only allow .jpg, .bmp and .png file types.
-            ]);
-
-            $image = new Image([
-                'applicant_id' => auth()->user()->id,
-                'name' => $request->get('name'),
-                $imageName = time().'.'.$request->image->getClientOriginalName(),
-                'file_path' => time().'.'.$request->image->getClientOriginalName(),
-                $request->image->move(public_path('imageUpload'), $imageName),
-            ]);
-
-            //            foreach ($image as $images) {
-            if ($image->applicant_id === auth()->user()->id) {
-                File::delete(public_path('imageUpload'.$image->file_path));
-                DB::table('image')->where('applicant_id', auth()->user()->id)->delete();
+            // Remove existing profile image for this user if one exists
+            $existingImages = Image::where('applicant_id', Auth::id())->get();
+            foreach ($existingImages as $existing) {
+                if ($existing->file_path && File::exists(public_path('imageUpload/'.$existing->file_path))) {
+                    File::delete(public_path('imageUpload/'.$existing->file_path));
+                }
             }
-            $image->save();
-            //            }
+            Image::where('applicant_id', Auth::id())->delete();
 
-            //            $image->save();
-            //            $image->update(['image'=>$imageName]);
-            //            $request->file->store('imageUpload', 'public');
-            // Store the record, using the new file hashname which will be it's new filename identity.
-            // Public Folder// Finally, save the record.
-            // Public Folder
+            // Move new image to public upload folder
+            $imageFile->move(public_path('imageUpload'), $imageName);
 
-            return back()->with('success', 'Image uploaded Successfully!')
+            // Save new image record
+            Image::create([
+                'applicant_id' => Auth::id(),
+                'name' => $request->input('name'),
+                'file_path' => $imageName,
+            ]);
+
+            return back()->with('success', 'Profile photo uploaded successfully!')
                 ->with('image', $imageName);
-
         }
 
-        //        return back()->with('success', 'Image uploaded Successfully!')
-        //            ->with('image', $imageName);
-        return view('applicant.accounts')->with('success', 'upload image successfully');
+        return back()->with('error', 'Please select an image file to upload.');
     }
 
     public function create()

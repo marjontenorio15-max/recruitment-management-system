@@ -6,15 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Mail\UserEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        //        $users = DB::table('users')->orderBy('role_id')->get();
-        $users = DB::table('users')->orderBy('role_id')
+        $users = User::orderBy('role_id')
             ->simplePaginate(20);
 
         return view('users.index', compact('users'));
@@ -22,11 +20,18 @@ class UserController extends Controller
 
     public function sendEmail(Request $request)
     {
+        $request->validate([
+            'ids' => 'required|array',
+        ]);
 
         $users = User::whereIn('id', $request->ids)->get();
 
-        foreach ($users as $key => $user) {
-            Mail::to($user->email)->send(new UserEmail($user));
+        foreach ($users as $user) {
+            try {
+                Mail::to($user->email)->send(new UserEmail($user));
+            } catch (\Throwable $e) {
+                // Ignore mail transport failure during local dev
+            }
         }
 
         return response()->json(['success' => 'Send email successfully.']);

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class Applicants extends Component
 {
@@ -185,12 +186,16 @@ class Applicants extends Component
 
             $this->resetInputFields();
 
-        } catch (Exception $e) {
-            return response()->json(['e' => $e]);
+        } catch (\Throwable $e) {
+            return response()->json(['e' => $e->getMessage()]);
         }
 
     }
 
+    /**
+     * @param  int|string  $id
+     * @return void
+     */
     public function edit($id)
     {
 
@@ -287,15 +292,23 @@ class Applicants extends Component
         $this->resetInputFields();
     }
 
+    /**
+     * @param  int|string  $id
+     * @return void
+     */
     public function delete($id)
     {
         Applicant::find($id)->delete();
         session()->flash('message', 'applicant Deleted Successfully.');
     }
 
+    /**
+     * @param  string  $id
+     * @return BinaryFileResponse
+     */
     public function download($id)
     {
-        $applicant = DB::table('applicants')->where('applicants.file_attachment', $id)->first();
+        $applicant = Applicant::where('file_attachment', $id)->first();
         if (! $applicant || ! $applicant->file_attachment) {
             abort(404);
         }

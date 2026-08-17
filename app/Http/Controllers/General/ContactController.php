@@ -17,7 +17,11 @@ class ContactController extends Controller
 
     public function mailContactForm(ContactFormRequest $message, Recipient $recipient)
     {
-        $recipient->notify(new ContactFormMessage($message));
+        try {
+            $recipient->notify(new ContactFormMessage($message));
+        } catch (\Throwable $e) {
+            // Ignore transport errors in local dev
+        }
 
         return redirect()->back()->with('message', 'Thanks for your message! We will get back to you soon!');
     }

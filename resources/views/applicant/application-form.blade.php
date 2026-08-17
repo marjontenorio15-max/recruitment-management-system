@@ -56,7 +56,7 @@
             @endif
 
             <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-6">
-                @livewire('applicants')
+                @include('applicant.accounts');
             </div>
         </div>
     </div>

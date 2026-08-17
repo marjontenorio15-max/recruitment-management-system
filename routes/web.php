@@ -42,7 +42,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     Route::view('/job_list', 'pages.job-list')->name('job-list');
 
     Route::get('/getVacancies', [VacancyController::class, 'getVacancies'])->name('vacancies.active');
-    Route::get('/getBestApplicant', [VacancyController::class, 'getBestApplicant']);
+    Route::get('/getBestApplicant', [VacancyController::class, 'getBestApplicant'])->name('getBestApplicant');
 
     // Contact Form
     Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
@@ -96,11 +96,11 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
         Route::resource('dashboard', ChartJSController::class);
 
         // Vacancy & Applications
-        Route::resource('/vacancy', VacancyController::class)->names('vacancy');
+        Route::resource('vacancy', VacancyController::class);
         Route::view('/success', 'vacancy.success')->name('success');
         Route::get('/status-update/{id}', [VacancyController::class, 'updateStatus'])->name('status-update');
 
-        Route::resource('/apply', ApplyController::class)->names('apply');
+        Route::resource('apply', ApplyController::class);
         Route::get('/get_applicants', [ApplyController::class, 'get_applicants']);
         Route::get('/application-form/{id}', [ApplyController::class, 'get']);
         Route::get('/applyJob', [ApplyController::class, 'applyJob']);
@@ -117,7 +117,7 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
         Route::view('/create-employer', 'employer.create-employer')->name('create-employer');
 
         // Company Management
-        Route::resource('/company', CompanyController::class)->names('company');
+        Route::resource('company', CompanyController::class);
 
         // Applicant Forms & Tables (Livewire & Views)
         Route::view('/applicant-create', 'livewire.applicant-create')->name('applicant-create');

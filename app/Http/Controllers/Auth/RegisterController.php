@@ -8,6 +8,7 @@ use App\Models\Applicant;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -22,7 +23,7 @@ class RegisterController extends Controller
     {
         $user = $this->storeUserAndApplicant($request, roleId: 3);
 
-        auth()->login($user);
+        Auth::login($user);
 
         return redirect('/view-jobs')->with('success', 'Account successfully registered.');
     }
@@ -65,7 +66,7 @@ class RegisterController extends Controller
         if ($sessionOtp && (string) $sessionOtp === (string) $request->otp) {
             try {
                 $user = $this->storeUserAndApplicant($request, roleId: 3);
-                auth()->login($user);
+                Auth::login($user);
 
                 session()->forget(['otp', 'otp_email']);
 
@@ -108,7 +109,7 @@ class RegisterController extends Controller
             $data['file_attachment'] = $fileName;
         }
 
-        Applicant::where('applicant_id', auth()->id())->update($data);
+        Applicant::where('applicant_id', Auth::id())->update($data);
 
         return response()->json([
             'result' => 1,
